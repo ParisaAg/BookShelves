@@ -67,4 +67,15 @@ class LogoutView(APIView):
         response = Response({"message":'you are logged out now'}, status=status.HTTP_200_OK)
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
-        return response
+        return 
+        
+
+
+
+def db_check(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        return JsonResponse({"db": "ok"})
+    except Exception as e:
+        return JsonResponse({"db": "error", "detail": str(e)})
