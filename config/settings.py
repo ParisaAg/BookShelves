@@ -3,6 +3,8 @@ from pathlib import Path
 import os
 import dj_database_url
 
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,11 +72,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway', # database name
-        'USER': 'postgres',
-        'PASSWORD': 'GMXTIUBndzAnPIOZUKocqgOjWWhNNeCE',
-        'HOST': 'trolley.proxy.rlwy.netl',
-        'PORT': '25082',
+        'NAME': os.getenv('DB_NAME'), # database name
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
