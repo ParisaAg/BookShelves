@@ -61,9 +61,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')
+#     )
+# }
+
 DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get('postgresql://postgres:GMXTIUBndzAnPIOZUKocqgOjWWhNNeCE@trolley.proxy.rlwy.net:25082/railway'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway', # database name
+        'USER': 'postgres',
+        'PASSWORD': 'GMXTIUBndzAnPIOZUKocqgOjWWhNNeCE',
+        'HOST': 'trolley.proxy.rlwy.netl',
+        'PORT': '25082',
+    }
 }
+
+
 CSRF_TRUSTED_ORIGINS = [
     'https://bookshelves.up.railway.app'
 ]
