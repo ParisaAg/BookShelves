@@ -13,6 +13,8 @@ class Category(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
+    is_available = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0)
     author = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
