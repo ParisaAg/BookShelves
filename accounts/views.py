@@ -41,7 +41,11 @@ class LoginView(APIView):
                 "message": 'you are logged in now',
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
-                "username":str(username)
+                "username":str(username),
+                "email":str(email),
+                "id":user.id,
+
+
             }
             return response
         else:
