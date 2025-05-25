@@ -5,7 +5,7 @@ from .serializers import RegisterSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
-
+from django.contrib.auth.models import User  
 
 # Create your views here.
 class RegisterView(APIView):
@@ -24,9 +24,8 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        email=request.data.get("email")
 
-        user = authenticate(username=username, password=password,email=email)
+        user = authenticate(username=username, password=password)
 
         if user is not None:
             refresh = RefreshToken.for_user(user)
@@ -42,8 +41,8 @@ class LoginView(APIView):
                 "message": 'you are logged in now',
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
-                "username":str(username),
-                "email":str(email),
+                "username":user.username,
+                "email":user.email,
                 "id":user.id,
 
 
