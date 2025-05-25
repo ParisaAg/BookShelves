@@ -8,5 +8,6 @@ urlpatterns = [
     path('api/auth/', include('accounts.urls')), 
     path("api/dbcheck/", db_check),
     path('api/', include('books.urls')),
+    path('postgresql/', include('postgresql_app.urls')),
 
 ]
