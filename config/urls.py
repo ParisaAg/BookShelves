@@ -7,7 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')), 
     path("api/dbcheck/", db_check),
-    path('api/', include('books.urls')),
+    path('api/books/', include('books.urls')),
     path('postgresql/', include('postgresql_app.urls')),
 
 ]

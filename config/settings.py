@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'accounts',
     'books',
     'postgresql_app',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
