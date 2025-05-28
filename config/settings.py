@@ -101,11 +101,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://bookshelves.liara.run'
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", 
-    "https://bookshelves.liara.run",
-  
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
