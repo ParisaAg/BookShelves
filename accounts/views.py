@@ -36,13 +36,11 @@ class LoginView(APIView):
 
         try:
             user = User.objects.get(email=email)
-            username = user.username
         except User.DoesNotExist:
             return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        user = authenticate(username=username, password=password)
-
-        if user is not None:
+        # Authenticate using email and password
+        if user.check_password(password):
             refresh = RefreshToken.for_user(user)
             response = Response()
             response.set_cookie(
