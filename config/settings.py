@@ -1,19 +1,27 @@
-import dj_database_url
 from pathlib import Path
 import os
-import dj_database_url
 import cloudinary
+from datetime import timedelta
 
 from dotenv import load_dotenv
 load_dotenv()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_COOKIE': 'access_token',
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SECURE': True,  # مقدار پیش‌فرض
+    'AUTH_COOKIE_SAMESITE': 'Lax',
+}
 
-SECRET_KEY = 'django-insecure-odf!_4*r&l$cro)r=ivotqoh=ajrmps=9gs)(c)8l$(^@a9*v2'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = False
+
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -93,18 +101,27 @@ DATABASES = {
     }
 }
 
+if DEBUG:
+    SIMPLE_JWT['AUTH_COOKIE_SECURE'] = False
+else:
+    SIMPLE_JWT['AUTH_COOKIE_SECURE'] = True
+
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'https://bookshelves.liara.run',
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
-
 CSRF_TRUSTED_ORIGINS = [
-    'https://bookshelves.liara.run'
+    'https://bookshelves.liara.run',
+    'http://localhost:5173',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -154,18 +171,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-}
-
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_COOKIE': 'access_token',
-    'AUTH_COOKIE_HTTP_ONLY': True,
-    'AUTH_COOKIE_SECURE': True,  
-    'AUTH_COOKIE_SAMESITE': 'Lax',
 }
 
 
