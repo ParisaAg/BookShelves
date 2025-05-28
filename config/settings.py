@@ -4,6 +4,7 @@ import cloudinary
 from datetime import timedelta
 
 from dotenv import load_dotenv
+from corsheaders.defaults import default_headers
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,8 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,7 +38,6 @@ INSTALLED_APPS = [
     'accounts',
     'books',
     'postgresql_app',
-    'corsheaders',
     'django_filters',
     'orders',
     'carts',
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     
 ]
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -56,7 +55,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -111,6 +109,26 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://bookshelves.liara.run',
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'access-control-allow-origin',
+    'access-control-allow-credentials',
+]
+
+CORS_EXPOSE_HEADERS = [
+    'Content-Type',
+    'X-CSRFToken',
+    'Authorization',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
