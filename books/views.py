@@ -8,13 +8,13 @@ from .permission import IsAdminOrStaff
 
 
 class BookListView(generics.ListAPIView):
-    queryset = Book.objects.all().order_by('-published_date')
+    queryset = Book.objects.all().order_by('-created_at')
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['author'] 
     search_fields = ['title', 'description']  
-    ordering_fields = ['published_date', 'price']  
-    ordering = ['-published_date']
+    ordering_fields = ['published_year', 'price']  
+    #ordering = ['-published_year']
 
 
 

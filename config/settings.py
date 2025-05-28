@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'books',
     'postgresql_app',
     'django_filters',
+    'orders',
+    'carts',
+    
 ]
 
 MIDDLEWARE = [
