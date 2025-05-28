@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-odf!_4*r&l$cro)r=ivotqoh=ajrmps=9gs)(c)8l$(^@a9*v2'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -47,12 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'corsheaders.middleware.CorsMiddleware',
-]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", 
-  
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -98,8 +94,17 @@ DATABASES = {
 }
 
 
+CORS_ALLOW_CREDENTIALS = True
+
+
 CSRF_TRUSTED_ORIGINS = [
-    'https://bookshelves.up.railway.app'
+    'https://bookshelves.liara.run'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", 
+    "https://bookshelves.liara.run",
+  
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
