@@ -12,6 +12,7 @@ from .views import (
     CategoryRetrieveView,
     CategoryUpdateView,
     CategoryDeleteView,
+    UploadImageToCloudinaryView,
     AuthorListView,
 )
 
@@ -27,5 +28,6 @@ urlpatterns = [
     path('categories/<int:pk>/delete/', CategoryDeleteView.as_view(), name='category-delete'),
     path('authors/', AuthorListView.as_view(), name='author-list'),
     path('latest/', LatestBooksView.as_view(), name='latest-books'),
+    path('upload-image/', UploadImageToCloudinaryView.as_view(), name='upload_image_to_cloudinary'),
 
 ]

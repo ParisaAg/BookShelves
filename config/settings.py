@@ -2,6 +2,7 @@ import dj_database_url
 from pathlib import Path
 import os
 import dj_database_url
+import cloudinary
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -28,9 +29,12 @@ INSTALLED_APPS = [
     'accounts',
     'books',
     'postgresql_app',
+    'corsheaders',
     'django_filters',
     'orders',
     'carts',
+    'cloudinary',
+    'cloudinary_storage',
     
 ]
 
@@ -43,9 +47,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
 ]
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5073", 
+  
+]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -165,3 +173,20 @@ SIMPLE_JWT = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
+
+cloudinary.config(
+    cloud_name = CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key = CLOUDINARY_STORAGE['API_KEY'],
+    api_secret = CLOUDINARY_STORAGE['API_SECRET'],
+    secure = True
+)

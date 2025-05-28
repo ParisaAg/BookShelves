@@ -49,7 +49,7 @@ class LoginView(APIView):
             }
             return response
         else:
-            return Response({"error": "username or password does'nt match correctly"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "username or password doesn't match correctly"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
@@ -76,11 +76,3 @@ class LogoutView(APIView):
         
 
 
-
-def db_check(request):
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-        return JsonResponse({"db": "ok"})
-    except Exception as e:
-        return JsonResponse({"db": "error", "detail": str(e)})

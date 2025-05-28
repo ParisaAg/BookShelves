@@ -4,7 +4,12 @@ from .models import Book,Category,Author
 from .serializers import BookSerializer,CategorySerializer,AuthorSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from .permission import IsAdminOrStaff
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt # برای تست موقت، در پروداکشن CSRF token رو مدیریت کنید
+import cloudinary.uploader
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
 
 
 class BookListView(generics.ListAPIView):
@@ -77,3 +82,43 @@ class AuthorListView(generics.ListAPIView):
 class LatestBooksView(ListAPIView):
     queryset = Book.objects.all().order_by('-created_at')[:10] 
     serializer_class = BookSerializer
+
+
+
+
+
+
+
+
+class UploadImageToCloudinaryView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def post(self, request, *args, **kwargs):
+        image_file = request.FILES.get('imageFile')  # 'imageFile' نامی است که از فرانت‌اند می‌آید
+
+        if not image_file:
+            return Response({'error': 'فایلی برای آپلود انتخاب نشده است.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # آپلود فایل به Cloudinary
+            upload_result = cloudinary.uploader.upload(
+                image_file,
+                folder="my_app_uploads",  # نام پوشه دلخواه در Cloudinary
+                # میتونید گزینه‌های بیشتری مثل public_id و... رو هم اینجا اضافه کنید
+            )
+
+            # URL امن تصویر آپلود شده
+            image_url = upload_result.get('secure_url')
+            public_id = upload_result.get('public_id')  # برای مدیریت یا حذف عکس در آینده
+
+            # اینجا می‌تونید image_url و public_id رو در دیتابیس ذخیره کنید
+            # مثلا: MyImageModel.objects.create(user=request.user, image_url=image_url, public_id=public_id)
+
+            return Response({
+                'message': 'عکس با موفقیت در Cloudinary آپلود شد!',
+                'imageUrl': image_url,
+                'publicId': public_id
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({'error': f'خطا در آپلود به Cloudinary: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
