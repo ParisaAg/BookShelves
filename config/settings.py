@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'carts',
     'cloudinary',
     'cloudinary_storage',
+    'sliders',
     
 ]
 MIDDLEWARE = [
@@ -198,8 +199,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-
-
+MEDIA_URL = '/media/'  
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
@@ -214,3 +215,4 @@ cloudinary.config(
     api_secret = CLOUDINARY_STORAGE['API_SECRET'],
     secure = True
 )
+

@@ -9,5 +9,6 @@ urlpatterns = [
     path('api/orders/', include('orders.urls')),
     path('api/carts/', include('carts.urls')),
     path('postgresql/', include('postgresql_app.urls')),
+    path('api/sliders/', include('sliders.urls')),
 
 ]
