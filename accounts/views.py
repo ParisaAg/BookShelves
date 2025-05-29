@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,permissions
 from .serializers import RegisterSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User  
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 class RegisterView(APIView):
@@ -61,8 +63,21 @@ class LoginView(APIView):
             return response
         else:
             return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+        
 
 
+class CheckAuthView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "authenticated": True,
+            "id": user.id,
+            "email": user.email,
+            "username": user.username,
+        }, status=status.HTTP_200_OK)
 
 
 class UserProfileView(APIView):
