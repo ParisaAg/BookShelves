@@ -1,3 +1,4 @@
+from django_ratelimit.decorators import ratelimit
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
@@ -8,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User  
 from django.contrib.auth import get_user_model
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 class RegisterView(APIView):
@@ -32,6 +34,7 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True))
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
