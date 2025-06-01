@@ -28,6 +28,8 @@ class Book(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='books')
     cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    views = models.PositiveIntegerField(default=0)      
+    sold = models.PositiveIntegerField(default=0)   
     #language-page-publisher
 
     def __str__(self):

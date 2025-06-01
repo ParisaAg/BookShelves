@@ -14,6 +14,8 @@ from .views import (
     CategoryDeleteView,
     UploadImageToCloudinaryView,
     AuthorListView,
+    TrendingBooksView,
+    TopSellersView,
 )
 
 urlpatterns = [
@@ -29,5 +31,8 @@ urlpatterns = [
     path('authors/', AuthorListView.as_view(), name='author-list'),
     path('latest/', LatestBooksView.as_view(), name='latest-books'),
     path('upload-image/', UploadImageToCloudinaryView.as_view(), name='upload_image_to_cloudinary'),
+    path('latest/', LatestBooksView.as_view(), name='latest-books'),
+    path('trending/', TrendingBooksView.as_view(), name='trending-books'),
+    path('top-sellers/', TopSellersView.as_view(), name='top-sellers-books'),
 
 ]

@@ -5,9 +5,12 @@ from .serializers import BookSerializer,CategorySerializer,AuthorSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from .permission import IsAdminOrStaff
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt # برای تست موقت، در پروداکشن CSRF token رو مدیریت کنید
+from django.views.decorators.csrf import csrf_exempt
 import cloudinary.uploader
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
+from django.shortcuts import get_object_or_404
 
 
 class BookListView(generics.ListAPIView):
@@ -77,18 +80,7 @@ class AuthorListView(generics.ListAPIView):
 
 
 
-class LatestBooksView(ListAPIView):
-    queryset = Book.objects.all().order_by('-created_at')[:10] 
-    serializer_class = BookSerializer
 
-
-
-
-
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, permissions
 
 class UploadImageToCloudinaryView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -122,3 +114,37 @@ class UploadImageToCloudinaryView(APIView):
 
         except Exception as e:
             return Response({'error': f'خطا در آپلود به Cloudinary: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+
+
+
+class LatestBooksView(APIView):
+    def get(self, request):
+        books = Book.objects.order_by('-created_at')[:10]
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class TrendingBooksView(APIView):
+    def get(self, request):
+        books = Book.objects.order_by('-views')[:10]
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class TopSellersView(APIView):
+    def get(self, request):
+        books = Book.objects.order_by('-sold')[:10]
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+
+class BookDetailView(APIView):
+    def get(self, request, pk):
+        book = get_object_or_404(Book, pk=pk)
+        book.views += 1
+        book.save()
+        serializer = BookSerializer(book)
+        return Response(serializer.data)

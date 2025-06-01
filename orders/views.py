@@ -1,11 +1,11 @@
 from django.shortcuts import render
 
 from rest_framework import generics, permissions,status
-from .models import Order
+from .models import Order,OrderItem
+from carts.models import Cart
 from .serializers import OrderSerializer,OrderInvoiceSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 
 
 class OrderCreateView(generics.CreateAPIView):
@@ -13,8 +13,36 @@ class OrderCreateView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        cart, _ = Cart.objects.get_or_create(user=user)
+        cart_items = cart.items.all()
 
+        if not cart_items.exists():
+            raise ValueError("Cart is empty.")
 
+        # ساخت سفارش
+        order = serializer.save(user=user)
+
+        for item in cart_items:
+            if item.quantity > item.book.inventory:
+                raise ValueError(f"Not enough inventory for '{item.book.title}'.")
+
+            # ساخت آیتم سفارش
+            OrderItem.objects.create(
+                order=order,
+                book=item.book,
+                quantity=item.quantity,
+                price=item.book.price
+            )
+
+            # به‌روزرسانی کتاب
+            item.book.sold += item.quantity
+            item.book.inventory = max(item.book.inventory - item.quantity, 0)
+            item.book.save()
+
+        # پاک‌سازی سبد خرید
+        cart_items.delete()
 
 
 class UserOrderListView(generics.ListAPIView):
