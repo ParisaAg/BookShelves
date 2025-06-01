@@ -17,7 +17,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_COOKIE': 'access_token',
     'AUTH_COOKIE_HTTP_ONLY': True,
-    'AUTH_COOKIE_SECURE': True,  # مقدار پیش‌فرض
+    'AUTH_COOKIE_SECURE': True,  
     'AUTH_COOKIE_SAMESITE': 'Lax',
 }
 
