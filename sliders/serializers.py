@@ -6,7 +6,7 @@ class SliderImageSerializer(serializers.ModelSerializer):
         model = SliderImage
         fields = ['id', 'title', 'image', 'created_at']
 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.build_url()
-        return None
+    # def get_image(self, obj):
+    #     if obj.image:
+    #         return obj.image.build_url()
+    #     return None
