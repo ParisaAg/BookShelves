@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from .models import SliderImage
 
-
-
 class SliderImageSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
@@ -12,5 +10,5 @@ class SliderImageSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         if obj.image:
-            return obj.image.url  # This returns the full URL
+            return obj.image.build_url()
         return None
