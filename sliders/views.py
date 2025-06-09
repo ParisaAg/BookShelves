@@ -9,9 +9,12 @@ class SliderImageListCreateView(generics.ListCreateAPIView):
     serializer_class = SliderImageSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def post(self, request, *args, **kwargs):
+    print("FILES:", request.FILES)
+    print("DATA:", request.data)
+    serializer = self.get_serializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    print("ERRORS:", serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
