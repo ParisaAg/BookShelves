@@ -228,7 +228,7 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 #MEDIA_URL = '/media/'
 #git commit -am "temp fix for media"
-git push liara master
+#git push liara master
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
