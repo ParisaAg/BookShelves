@@ -1,15 +1,8 @@
-from rest_framework import generics, status
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
-from .models import SliderImage
-from .serializers import SliderImageSerializer
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.conf import settings
-class SliderImageListCreateView(generics.ListCreateAPIView):
-    queryset = SliderImage.objects.all().order_by('-created_at')
-    serializer_class = SliderImageSerializer
-    parser_classes = [MultiPartParser, FormParser]
+
+# class SliderImageListCreateView(generics.ListCreateAPIView):
+#     queryset = SliderImage.objects.all().order_by('-created_at')
+#     serializer_class = SliderImageSerializer
+#     parser_classes = [MultiPartParser, FormParser]
 
 # def post(self, request, *args, **kwargs):
 #     print("FILES:", request.FILES)
