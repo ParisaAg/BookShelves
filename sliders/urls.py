@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import SliderImageListCreateView
+from .views import SliderImageUploadView
 
 urlpatterns = [
-    path('', SliderImageListCreateView.as_view(), name='slider-images'),
+     path('', SliderImageUploadView.as_view(), name='slider-upload'),
 ]
 
 
