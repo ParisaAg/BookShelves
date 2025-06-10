@@ -3,7 +3,6 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from .models import SliderImage
 from .serializers import SliderImageSerializer
-from object_storage.views import get_s3_client
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.conf import settings
