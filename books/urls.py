@@ -14,7 +14,7 @@ from .views import (
 
 router = DefaultRouter()
 
-router.register(r'testbook', BookViewSet, basename='book')
+router.register(r'books', BookViewSet, basename='book')
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'authors', AuthorViewSet, basename='author')
 
