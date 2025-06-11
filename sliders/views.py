@@ -14,16 +14,11 @@ class SliderImageUploadView(GenericAPIView):
     parser_classes = [MultiPartParser, FormParser]
     
     def get(self, request, *args, **kwargs):
-        # 1. گرفتن همه آبجکت ها از دیتابیس
         queryset = self.get_queryset()
-        
-        # 2. سریالایز کردن لیست آبجکت ها (مهم: many=True)
         serializer = self.get_serializer(queryset, many=True)
-        
-        # 3. برگرداندن پاسخ
         return Response(serializer.data)
     
-    
+
     def post(self, request, *args, **kwargs):
        
         serializer = self.get_serializer(data=request.data)
