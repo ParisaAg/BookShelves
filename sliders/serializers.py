@@ -11,7 +11,11 @@ class SliderImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image_url', 'created_at']
 
     def get_image_url(self, obj):
-        if hasattr(obj.image, 'public_id'):
-            url, options = cloudinary_url(obj.image.public_id)
-            return url
-        return f"https://res.cloudinary.com/{settings.CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/{obj.image}"
+        if obj.image:
+            try:
+            # اگر شیء CloudinaryResource باشه
+                return obj.image.url
+            except AttributeError:
+            # اگر فقط رشته باشه
+                return f"https://res.cloudinary.com/{settings.CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/{obj.image}"
+        return None
