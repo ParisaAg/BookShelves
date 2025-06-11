@@ -61,8 +61,6 @@ class BookSerializer(serializers.ModelSerializer):
         return None 
 
     def get_average_rating(self, obj):
-        # این کد شما عالی بود، فقط در صورت نبودن مدل Review خطا می‌دهد
-        # مطمئن شوید مدل Review با related_name='reviews' به Book متصل است
         if hasattr(obj, 'reviews'):
             avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']
             return round(avg, 1) if avg else 0
