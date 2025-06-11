@@ -3,7 +3,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-# 1. فقط ViewSet ها و ویوهای سفارشی را import می کنیم
 from .views import (
     BookViewSet,
     CategoryViewSet,
