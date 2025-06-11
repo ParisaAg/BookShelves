@@ -50,18 +50,14 @@ class BookViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    """
-    این ViewSet تمام عملیات مربوط به دسته‌بندی را انجام می‌دهد.
-    """
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrStaff] # دسترسی فقط برای ادمین/استاف
-
+    permission_classes = [IsAdminOrStaff] 
+    pagination_class = None
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    """
-    این ViewSet تمام عملیات مربوط به نویسنده را انجام می‌دهد.
-    """
+
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [IsAdminOrStaff]
