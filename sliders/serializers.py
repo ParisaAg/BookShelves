@@ -10,4 +10,5 @@ class SliderImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image_url', 'created_at']
 
     def get_image_url(self, obj):
-        return f"https://res.cloudinary.com/{settings.CLOUDINARY_STORAGE['CLOUD_NAME']}/{obj.image}"
+        return obj.image.url
+
