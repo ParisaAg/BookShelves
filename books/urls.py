@@ -1,38 +1,28 @@
-from django.urls import path
+# your_app/urls.py
+
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+# 1. فقط ViewSet ها و ویوهای سفارشی را import می کنیم
 from .views import (
-    BookListView,
-    BookDetailView,
-    BookCreateAPIView,
-    BookDeleteAPIView,
-    BookUpdateAPIView
-)
-from .views import (
-    CategoryListCreateView,
+    BookViewSet,
+    CategoryViewSet,
+    AuthorViewSet,
     LatestBooksView,
-    CategoryRetrieveView,
-    CategoryUpdateView,
-    CategoryDeleteView,
-    UploadImageToCloudinaryView,
-    AuthorListView,
     TrendingBooksView,
     TopSellersView,
 )
 
-urlpatterns = [
-    path('', BookListView.as_view(), name='book-list'),
-    path('<int:pk>/', BookDetailView.as_view(), name='book-detail'),
-    path('create/', BookCreateAPIView.as_view(), name='book-create'),
-    path('<int:id>/edit/', BookUpdateAPIView.as_view(), name='book-edit'),
-    path('<int:id>/delete/', BookDeleteAPIView.as_view(), name='book-delete'),
-    path('categories/', CategoryListCreateView.as_view(), name='category-list-create'),
-    path('categories/<int:pk>/', CategoryRetrieveView.as_view(), name='category-retrieve'),
-    path('categories/<int:pk>/edit/', CategoryUpdateView.as_view(), name='category-update'),
-    path('categories/<int:pk>/delete/', CategoryDeleteView.as_view(), name='category-delete'),
-    path('authors/', AuthorListView.as_view(), name='author-list'),
-    path('latest/', LatestBooksView.as_view(), name='latest-books'),
-    path('upload-image/', UploadImageToCloudinaryView.as_view(), name='upload_image_to_cloudinary'),
-    path('latest/', LatestBooksView.as_view(), name='latest-books'),
-    path('trending/', TrendingBooksView.as_view(), name='trending-books'),
-    path('top-sellers/', TopSellersView.as_view(), name='top-sellers-books'),
+router = DefaultRouter()
 
+router.register(r'books', BookViewSet, basename='book')
+router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'authors', AuthorViewSet, basename='author')
+
+urlpatterns = [
+    path('', include(router.urls)),
+
+    path('latest-books/', LatestBooksView.as_view(), name='latest-books'),
+    path('trending-books/', TrendingBooksView.as_view(), name='trending-books'),
+    path('top-sellers/', TopSellersView.as_view(), name='top-sellers'),
 ]
