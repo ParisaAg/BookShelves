@@ -1,6 +1,7 @@
 # views.py
 
 from rest_framework.generics import GenericAPIView
+from rest_framework import generics
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
@@ -28,3 +29,7 @@ class SliderImageUploadView(GenericAPIView):
             return Response(self.get_serializer(instance).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
+class SliderImageDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SliderImage.objects.all()
+    serializer_class = SliderImageSerializer
