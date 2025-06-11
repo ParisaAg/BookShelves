@@ -12,15 +12,6 @@ class SliderImageUploadView(GenericAPIView):
     queryset = SliderImage.objects.all()
     serializer_class = SliderImageSerializer
     parser_classes = [MultiPartParser, FormParser]
-
-    def post(self, request, *args, **kwargs):
-       
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True): 
-            serializer.save()
-            instance = serializer.instance
-            return Response(self.get_serializer(instance).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, *args, **kwargs):
         # 1. گرفتن همه آبجکت ها از دیتابیس
@@ -31,3 +22,14 @@ class SliderImageUploadView(GenericAPIView):
         
         # 3. برگرداندن پاسخ
         return Response(serializer.data)
+    
+    
+    def post(self, request, *args, **kwargs):
+       
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True): 
+            serializer.save()
+            instance = serializer.instance
+            return Response(self.get_serializer(instance).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
