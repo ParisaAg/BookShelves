@@ -47,6 +47,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [IsAdminOrStaff]
+    pagination_class = None
 
 
 class LatestBooksView(APIView):
