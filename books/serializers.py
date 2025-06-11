@@ -7,7 +7,7 @@ from django.db.models import Avg
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['id', 'first_name', 'last_name'] 
+        fields = ['id', 'first_name', 'last_name','bio'] 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
