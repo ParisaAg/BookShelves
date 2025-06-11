@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import SliderImage
-from django.conf import settings
 from cloudinary.utils import cloudinary_url
 
 class SliderImageSerializer(serializers.ModelSerializer):
@@ -11,5 +10,5 @@ class SliderImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image_url', 'created_at']
 
     def get_image_url(self, obj):
-        url, options = cloudinary_url(obj.image)
+        url, _ = cloudinary_url(str(obj.image))  # 👈 همین خط اصلاح شد
         return url
