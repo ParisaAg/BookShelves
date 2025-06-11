@@ -13,13 +13,21 @@ class SliderImageUploadView(GenericAPIView):
     serializer_class = SliderImageSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    # این متد باید داخل کلاس باشد
     def post(self, request, *args, **kwargs):
-        # مطمئن شوید که سریالایزر از نسخه اصلاح شده قبلی است
+       
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid(raise_exception=True): # raise_exception=True برای دیباگ بهتر است
+        if serializer.is_valid(raise_exception=True): 
             serializer.save()
             instance = serializer.instance
             return Response(self.get_serializer(instance).data, status=status.HTTP_201_CREATED)
-        # با وجود raise_exception=True این خط دیگر لازم نیست، اما بودنش ضرری ندارد
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, *args, **kwargs):
+        # 1. گرفتن همه آبجکت ها از دیتابیس
+        queryset = self.get_queryset()
+        
+        # 2. سریالایز کردن لیست آبجکت ها (مهم: many=True)
+        serializer = self.get_serializer(queryset, many=True)
+        
+        # 3. برگرداندن پاسخ
+        return Response(serializer.data)
