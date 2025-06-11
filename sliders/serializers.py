@@ -11,9 +11,4 @@ class SliderImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image_url', 'created_at']
 
     def get_image_url(self, obj):
-        if obj.image:
-            try:
-                return obj.image.url
-            except AttributeError:
-                return f"https://res.cloudinary.com/{settings.CLOUDINARY_STORAGE['CLOUD_NAME']}/image/upload/{obj.image}"
-        return None
+        return obj.image.url if obj.image else None
