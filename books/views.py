@@ -17,7 +17,10 @@ class BookViewSet(viewsets.ModelViewSet):
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['author_id', 'category_id'] 
-    search_fields = ['title', 'description']
+    search_fields = ['title', 'description',
+        'author__first_name', 
+        'author__last_name', 
+        'category__name']
     ordering_fields = ['published_year', 'price', 'views', 'sold']
 
     def get_permissions(self):
