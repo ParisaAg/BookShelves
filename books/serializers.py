@@ -73,3 +73,4 @@ class BookSerializer(serializers.ModelSerializer):
     
     def get_final_price(self, obj):
         return obj.final_price
+    
