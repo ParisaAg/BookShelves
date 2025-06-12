@@ -33,7 +33,7 @@ class OrderCreateView(generics.CreateAPIView):
                 order=order,
                 book=item.book,
                 quantity=item.quantity,
-                price=item.book.price
+                price=item.book.final_price
             )
 
             # به‌روزرسانی کتاب

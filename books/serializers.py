@@ -39,9 +39,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
    
         fields = [
-            'id', 'title', 'description', 'price', 'published_year', 'inventory',
+            'id', 'title', 'description', 'published_year', 'inventory',
             'is_available', 'created_at', 'views', 'sold',
             'author', 'author_id',
+            'price', 'discount_price', 
+            'final_price', 'on_sale', 
             'category', 'category_id',
             'cover_image', 'cover_image_url',
             'average_rating'
@@ -49,11 +51,15 @@ class BookSerializer(serializers.ModelSerializer):
         
        
         extra_kwargs = {
-            'cover_image': {'write_only': True}
+            'cover_image': {'write_only': True},
+            'price': {'read_only': True} 
+
         }
     
         read_only_fields = ['views', 'created_at']
 
+    def get_on_sale(self, obj):
+        return obj.discount_price is not None
      
     def get_cover_image_url(self, obj):
         if obj.cover_image and hasattr(obj.cover_image, 'url'):
