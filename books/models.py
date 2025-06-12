@@ -16,7 +16,7 @@ class Author(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
     
-
+ 
 class Book(models.Model):
     title = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)

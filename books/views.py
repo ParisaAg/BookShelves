@@ -20,7 +20,8 @@ class BookViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description',
         'author__first_name', 
         'author__last_name', 
-        'category__name']
+        'category__name'
+        ]
     ordering_fields = ['published_year', 'price', 'views', 'sold']
 
     def get_permissions(self):
