@@ -45,7 +45,6 @@ class BookSerializer(serializers.ModelSerializer):
             'price', 'discount_price', 
             'final_price', 'on_sale', 
             'category', 'category_id',
-            'num_pages',
             'cover_image', 'cover_image_url',
             'average_rating'
         ]
