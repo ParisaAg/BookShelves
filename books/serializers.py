@@ -41,8 +41,8 @@ class BookSerializer(serializers.ModelSerializer):
             'is_available', 'created_at', 'views', 'sold',
             'num_pages', 'language', 'publisher',
             'author', 'author_id',
-            'price', 'discount_price', 
-            'final_price', 'on_sale', 
+            'price', 'discount_percentage',
+            'final_price', 'on_sale',
             'category', 'category_id',
             'cover_image', 'cover_image_url',
             'average_rating'
@@ -58,8 +58,12 @@ class BookSerializer(serializers.ModelSerializer):
         read_only_fields = ['views', 'created_at']
 
     def get_on_sale(self, obj):
-        return obj.discount_price is not None
-     
+        return obj.discount_percentage is not None and obj.discount_percentage > 0
+            
+    def get_final_price(self, obj):
+        return obj.final_price
+    
+
     def get_cover_image_url(self, obj):
         if obj.cover_image and hasattr(obj.cover_image, 'url'):
             return obj.cover_image.url
@@ -71,6 +75,4 @@ class BookSerializer(serializers.ModelSerializer):
             return round(avg, 1) if avg else 0
         return 0
     
-    def get_final_price(self, obj):
-        return obj.final_price
     
