@@ -28,13 +28,15 @@ class BookSerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), source='category', write_only=True
     )
-
-
     cover_image_url = serializers.SerializerMethodField(read_only=True)
-
-
     average_rating = serializers.SerializerMethodField(read_only=True)
+    on_sale = serializers.SerializerMethodField(read_only=True)
+    final_price = serializers.SerializerMethodField(read_only=True)
+    price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
 
+    discount_price = serializers.DecimalField(
+        max_digits=6, decimal_places=2, required=False, allow_null=True, default=None
+    )
     class Meta:
         model = Book
    
