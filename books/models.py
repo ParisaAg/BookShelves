@@ -1,5 +1,7 @@
 from django.db import models
 from cloudinary.models import CloudinaryField 
+from django.core.validators import MinValueValidator, MaxValueValidator
+from decimal import Decimal
 # Create your models here.
 
 class Category(models.Model):
@@ -33,11 +35,16 @@ class Book(models.Model):
     language = models.CharField(max_length=100, blank=True)
     publisher = models.CharField(max_length=100, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    discount_price = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    discount_percentage = models.PositiveIntegerField(
+        null=True, 
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)] 
+    )
     @property
     def final_price(self):
-        if self.discount_price:
-            return self.discount_price
+        if self.discount_percentage:
+            discount = self.price * (Decimal(self.discount_percentage) / 100)
+            return (self.price - discount).quantize(Decimal('0.01'))
         return self.price
     def __str__(self):
         return self.title
