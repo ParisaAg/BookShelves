@@ -21,14 +21,12 @@ class OrderCreateView(generics.CreateAPIView):
         if not cart_items.exists():
             raise ValueError("Cart is empty.")
 
-        # ساخت سفارش
         order = serializer.save(user=user)
 
         for item in cart_items:
             if item.quantity > item.book.inventory:
                 raise ValueError(f"Not enough inventory for '{item.book.title}'.")
 
-            # ساخت آیتم سفارش
             OrderItem.objects.create(
                 order=order,
                 book=item.book,
@@ -36,12 +34,11 @@ class OrderCreateView(generics.CreateAPIView):
                 price=item.book.final_price
             )
 
-            # به‌روزرسانی کتاب
+   
             item.book.sold += item.quantity
             item.book.inventory = max(item.book.inventory - item.quantity, 0)
             item.book.save()
 
-        # پاک‌سازی سبد خرید
         cart_items.delete()
 
 
