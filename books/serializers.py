@@ -52,7 +52,7 @@ class BookSerializer(serializers.ModelSerializer):
             'cover_image': {'write_only': True}
         }
     
-        read_only_fields = ['views', 'sold', 'created_at']
+        read_only_fields = ['views', 'created_at']
 
     
     def get_cover_image_url(self, obj):
