@@ -70,3 +70,6 @@ class BookSerializer(serializers.ModelSerializer):
             avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']
             return round(avg, 1) if avg else 0
         return 0
+    
+    def get_final_price(self, obj):
+        return obj.final_price
