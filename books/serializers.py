@@ -52,7 +52,7 @@ class BookSerializer(serializers.ModelSerializer):
        
         extra_kwargs = {
             'cover_image': {'write_only': True},
-            'price': {'read_only': True} 
+            #'price': {'read_only': True} 
 
         }
     
