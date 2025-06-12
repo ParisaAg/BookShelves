@@ -23,15 +23,21 @@ class Book(models.Model):
     inventory = models.PositiveIntegerField(default=0)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
     description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
     published_year = models.PositiveIntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='books')
     cover_image = CloudinaryField('image', null=True, blank=True, folder='book_covers')
-
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.PositiveIntegerField(default=0)      
-    sold = models.PositiveIntegerField(default=0)   
-    #language-page-publisher
-
+    sold = models.PositiveIntegerField(default=0)  
+    num_pages = models.PositiveIntegerField(default=0)
+    language = models.CharField(max_length=100, blank=True)
+    publisher = models.CharField(max_length=100, blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    @property
+    def final_price(self):
+        if self.discount_price:
+            return self.discount_price
+        return self.price
     def __str__(self):
         return self.title
