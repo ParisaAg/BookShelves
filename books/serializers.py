@@ -54,7 +54,7 @@ class BookSerializer(serializers.ModelSerializer):
     
         read_only_fields = ['views', 'created_at']
 
-    
+     
     def get_cover_image_url(self, obj):
         if obj.cover_image and hasattr(obj.cover_image, 'url'):
             return obj.cover_image.url
