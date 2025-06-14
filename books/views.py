@@ -23,6 +23,7 @@ class BookViewSet(viewsets.ModelViewSet):
         'author__last_name', 
         'category__name'
         ]
+    pagination_class = None
     ordering_fields = ['published_year', 'price', 'views', 'sold']
 
     def get_permissions(self):
