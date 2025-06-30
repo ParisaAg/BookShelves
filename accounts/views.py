@@ -34,7 +34,6 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
-    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True))
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
