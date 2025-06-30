@@ -30,13 +30,13 @@ class RegisterView(APIView):
                 "error": str(e),
                 "message": "An unexpected error occurred during registration."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    
 
 
 
 
 class LoginView(APIView):
-
+    
     throttle_scope = 'login'
     def post(self, request):
         email = request.data.get("email")
