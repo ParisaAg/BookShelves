@@ -13,6 +13,8 @@ from django.utils.decorators import method_decorator
 
 # Create your views here.
 class RegisterView(APIView):
+
+    throttle_scope = 'register'
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         try:
@@ -34,6 +36,8 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+
+    throttle_scope = 'login'
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
