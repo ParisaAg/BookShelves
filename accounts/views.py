@@ -1,4 +1,3 @@
-from django_ratelimit.decorators import ratelimit
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
@@ -36,7 +35,7 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
-    
+
     throttle_scope = 'login'
     def post(self, request):
         email = request.data.get("email")
