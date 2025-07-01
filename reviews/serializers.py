@@ -19,9 +19,6 @@ class BookDetailSerializer(serializers.ModelSerializer):
 
 
 
-
-# reviews/serializers.py
-
 class ReviewSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(min_value=1, max_value=5)
     class Meta:
