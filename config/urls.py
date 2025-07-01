@@ -11,6 +11,7 @@ urlpatterns = [
     path('postgresql/', include('postgresql_app.urls')),
     path('api/sliders/', include('sliders.urls')),
     path('api/reviews/', include('reviews.urls')),
+    path('api/', include('extras.urls')),
 
 
 ]
