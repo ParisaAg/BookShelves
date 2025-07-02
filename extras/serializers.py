@@ -17,7 +17,6 @@ class BannerSerializer(serializers.ModelSerializer):
 
     
     def get_image_url(self, obj):
-
         if obj.image_url and hasattr(obj.image_url, 'url'):
             return obj.image_url.url
         return None
