@@ -25,8 +25,12 @@ class BannerSerializer(serializers.ModelSerializer):
             return obj.image_url.url
         return None
     
-    
+
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
         fields = ['id', 'message']
+
+
+
+        
