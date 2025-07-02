@@ -7,7 +7,7 @@ from cloudinary.models import CloudinaryField
 class Banner(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255)
-    image = CloudinaryField('banners')
+    image_url = CloudinaryField('banners')
     button_text = models.CharField(max_length=50, blank=True, null=True)
     button_link = models.URLField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
