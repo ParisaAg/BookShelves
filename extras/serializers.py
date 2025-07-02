@@ -6,7 +6,7 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = [
-            'id', 'title', 'subtitle', 'image', 
+            'id', 'title', 'subtitle', 'image_url', 
             'button_text', 'button_link', 
             'gradient_from', 'gradient_to'
         ]
