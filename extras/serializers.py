@@ -29,8 +29,7 @@ class BannerSerializer(serializers.ModelSerializer):
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
-        fields = ['id', 'message']
+        fields = ['id', 'message','link_announce']
 
 
 
-        

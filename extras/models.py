@@ -21,5 +21,6 @@ class Banner(models.Model):
 class Announcement(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    link_announce = models.URLField(blank=True, null=True)
     def __str__(self):
         return self.message
