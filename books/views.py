@@ -1,5 +1,5 @@
 # views.py
-
+from django.utils import timezone
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,11 +35,21 @@ class BookViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def discounted(self, request):
-        discounted_books = self.queryset.filter(discount_percentage__gt=0)
+        now = timezone.now()
+        
+        discounted_books = Book.objects.filter(
+            discounts__is_active=True,
+            discounts__start_date__lte=now,
+            discounts__end_date__gte=now
+        ).distinct()
+
+        page = self.paginate_queryset(discounted_books)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(discounted_books, many=True)
         return Response(serializer.data)
-    
-    
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -84,16 +94,3 @@ class TopSellersView(APIView):
     
 
 
-
-#test
-
-    #if wanna test this view, you can use the following code in postman:
-        """
-    این ViewSet به تنهایی تمام عملیات مربوط به کتاب را انجام می‌دهد:
-    - GET /books/: لیست تمام کتاب‌ها (با فیلتر و جستجو)
-    - POST /books/: ساختن یک کتاب جدید (با آپلود عکس)
-    - GET /books/{id}/: نمایش جزئیات یک کتاب (با شمارش بازدید)
-    - PUT /books/{id}/: آپدیت کامل یک کتاب
-    - PATCH /books/{id}/: آپدیت بخشی از یک کتاب
-    - DELETE /books/{id}/: حذف یک کتاب
-    """
