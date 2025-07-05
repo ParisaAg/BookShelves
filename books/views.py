@@ -4,7 +4,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.decorators import action
 from .models import Book, Category, Author
 from .serializers import BookSerializer, CategorySerializer, AuthorSerializer
 from .permission import IsAdminOrStaff
@@ -32,6 +32,14 @@ class BookViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = []
         return super().get_permissions()
+    
+    @action(detail=False, methods=['get'])
+    def discounted(self, request):
+        discounted_books = self.queryset.filter(discount_percentage__gt=0)
+        serializer = self.get_serializer(discounted_books, many=True)
+        return Response(serializer.data)
+    
+    
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

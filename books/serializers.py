@@ -1,4 +1,3 @@
-# serializers.py
 
 from .models import Book, Category, Author
 from rest_framework import serializers

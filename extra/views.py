@@ -22,3 +22,6 @@ class BannerDetailView(RetrieveUpdateDestroyAPIView):
 class AnnouncementDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Announcement.objects.all()
     serializer_class = AnnouncementSerializer
+
+
+    
