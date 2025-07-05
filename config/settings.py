@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'cloudinary_storage',
     'sliders',
-    'extras',
+    'extra',
     'reviews',
   
 
