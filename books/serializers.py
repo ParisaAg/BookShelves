@@ -1,5 +1,5 @@
 
-from .models import Book, Category, Author
+from .models import Book, Category, Author,Discount
 from rest_framework import serializers
 from django.db.models import Avg
 
@@ -74,4 +74,27 @@ class BookSerializer(serializers.ModelSerializer):
             return round(avg, 1) if avg else 0
         return 0
     
+
+
+class DiscountSerializer(serializers.ModelSerializer):
+    books = BookSerializer(many=True, read_only=True)
     
+    book_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Book.objects.all(), 
+        source='books', 
+        many=True, 
+        write_only=True
+    )
+    
+    class Meta:
+        model = Discount
+        fields = [
+            'id', 
+            'name', 
+            'discount_percent', 
+            'start_date', 
+            'end_date', 
+            'is_active',
+            'books',      # این فیلد برای نمایش (GET) است
+            'book_ids'    # این فیلد برای ورودی (POST, PUT) است
+        ]
