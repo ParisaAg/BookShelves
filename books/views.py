@@ -65,8 +65,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrStaff] 
     pagination_class = None
-    throttle_classes = [] 
-
 
 class AuthorViewSet(viewsets.ModelViewSet):
 
@@ -77,20 +75,19 @@ class AuthorViewSet(viewsets.ModelViewSet):
     throttle_classes = [] 
 
 
-
 class LatestBooksView(APIView):
     def get(self, request):
         books = Book.objects.order_by('-created_at')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
         throttle_classes = [] 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 class TrendingBooksView(APIView):
     def get(self, request):
         books = Book.objects.order_by('-views')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
         throttle_classes = [] 
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TopSellersView(APIView):
@@ -98,8 +95,12 @@ class TopSellersView(APIView):
         books = Book.objects.order_by('-sold')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
         throttle_classes = [] 
+
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
-
-
+class DiscountViewSet(viewsets.ModelViewSet):
+    queryset = Discount.objects.all()
+    serializer_class = DiscountSerializer
+    permission_classes = [IsAdminOrStaff]
+    throttle_classes = [] 

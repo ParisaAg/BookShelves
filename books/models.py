@@ -46,7 +46,6 @@ class Book(models.Model):
 
     @property
     def final_price(self):
-        """قیمت نهایی را با احتساب تخفیف فعال محاسبه می‌کند"""
         active_discount = self.get_active_discount
         if active_discount:
             discount_amount = self.price * (Decimal(active_discount.discount_percent) / 100)
