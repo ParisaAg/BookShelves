@@ -2,14 +2,16 @@ from django.db import models
 from cloudinary.models import CloudinaryField 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
-# Create your models here.
+from django.utils import timezone
 
+# این مدل بدون تغییر است
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
+# این مدل بدون تغییر است
 class Author(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -35,16 +37,40 @@ class Book(models.Model):
     language = models.CharField(max_length=100, blank=True)
     publisher = models.CharField(max_length=100, blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    discount_percentage = models.PositiveIntegerField(
-        null=True, 
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)] 
-    )
+
+    @property
+    def get_active_discount(self):
+        """تخفیف فعال برای این کتاب را برمی‌گرداند"""
+        now = timezone.now()
+        return self.discounts.filter(is_active=True, start_date__lte=now, end_date__gte=now).first()
+
     @property
     def final_price(self):
-        if self.discount_percentage:
-            discount = self.price * (Decimal(self.discount_percentage) / 100)
-            return (self.price - discount).quantize(Decimal('0.01'))
+        """قیمت نهایی را با احتساب تخفیف فعال محاسبه می‌کند"""
+        active_discount = self.get_active_discount
+        if active_discount:
+            discount_amount = self.price * (Decimal(active_discount.discount_percent) / 100)
+            return (self.price - discount_amount).quantize(Decimal('0.01'))
         return self.price
+
     def __str__(self):
         return self.title
+
+# این مدل کاملا درست بود و بدون تغییر باقی می‌ماند
+class Discount(models.Model):
+    name = models.CharField(max_length=255, verbose_name="campaign name")
+    books = models.ManyToManyField('Book', related_name='discounts', verbose_name="discounted books")
+    discount_percent = models.PositiveIntegerField(
+        verbose_name="discount percentage",
+        validators=[MinValueValidator(1), MaxValueValidator(100)]
+    )
+    start_date = models.DateTimeField(verbose_name="start date")
+    end_date = models.DateTimeField(verbose_name="end date")
+    is_active = models.BooleanField(default=True, verbose_name="is active?")
+
+    def __str__(self):
+        return f"{self.name} ({self.discount_percent}%)"
+
+    class Meta:
+        verbose_name = "discount"
+        verbose_name_plural = "discounts"

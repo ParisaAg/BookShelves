@@ -1,12 +1,12 @@
 # views.py
-
+from django.utils import timezone
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from .models import Book, Category, Author
-from .serializers import BookSerializer, CategorySerializer, AuthorSerializer
+from .models import Book, Category, Author,Discount
+from .serializers import BookSerializer, CategorySerializer, AuthorSerializer,DiscountSerializer
 from .permission import IsAdminOrStaff
 
 
@@ -35,11 +35,21 @@ class BookViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def discounted(self, request):
-        discounted_books = self.queryset.filter(discount_percentage__gt=0)
+        now = timezone.now()
+        
+        discounted_books = Book.objects.filter(
+            discounts__is_active=True,
+            discounts__start_date__lte=now,
+            discounts__end_date__gte=now
+        ).distinct()
+
+        page = self.paginate_queryset(discounted_books)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(discounted_books, many=True)
         return Response(serializer.data)
-    
-    
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
