@@ -55,6 +55,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrStaff] 
     pagination_class = None
+    throttle_classes = [] 
+
 
 class AuthorViewSet(viewsets.ModelViewSet):
 
@@ -62,38 +64,32 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     permission_classes = [IsAdminOrStaff]
     pagination_class = None
+    throttle_classes = [] 
+
 
 
 class LatestBooksView(APIView):
     def get(self, request):
         books = Book.objects.order_by('-created_at')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
+        throttle_classes = [] 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
 class TrendingBooksView(APIView):
     def get(self, request):
         books = Book.objects.order_by('-views')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
+        throttle_classes = [] 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TopSellersView(APIView):
     def get(self, request):
         books = Book.objects.order_by('-sold')[:10]
         serializer = BookSerializer(books, many=True, context={'request': request})
+        throttle_classes = [] 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 
 
 
-#test
-
-    #if wanna test this view, you can use the following code in postman:
-        """
-    این ViewSet به تنهایی تمام عملیات مربوط به کتاب را انجام می‌دهد:
-    - GET /books/: لیست تمام کتاب‌ها (با فیلتر و جستجو)
-    - POST /books/: ساختن یک کتاب جدید (با آپلود عکس)
-    - GET /books/{id}/: نمایش جزئیات یک کتاب (با شمارش بازدید)
-    - PUT /books/{id}/: آپدیت کامل یک کتاب
-    - PATCH /books/{id}/: آپدیت بخشی از یک کتاب
-    - DELETE /books/{id}/: حذف یک کتاب
-    """
