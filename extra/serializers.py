@@ -17,7 +17,7 @@ class BannerSerializer(serializers.ModelSerializer):
             'button_text', 'button_link',
             'gradient_from', 'gradient_to'
         ]
-
+        
     
 
     def get_image_url(self, obj):
