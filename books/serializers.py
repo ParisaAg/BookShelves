@@ -50,7 +50,7 @@ class BookSerializer(serializers.ModelSerializer):
             'final_price', 'on_sale', 'active_discount',
             'author', 'category', 'published_year', 'inventory', 
             'is_available', 'cover_image',
-            'average_rating', 'views', 'sold',
+            'average_rating', 'views', 'sold','category_id'
             # فیلدهای نوشتاری
             'author_id', 'category_id'
         ]
