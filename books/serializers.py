@@ -2,6 +2,14 @@
 from .models import Book, Category, Author,Discount
 from rest_framework import serializers
 from django.db.models import Avg
+from .models import Discount
+
+
+class SimpleDiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discount
+        fields = ['name', 'discount_percent']
+
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,6 +36,7 @@ class BookSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(), source='category', write_only=True
     )
     cover_image_url = serializers.SerializerMethodField(read_only=True)
+    active_discount = SimpleDiscountSerializer(source='get_active_discount', read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
     on_sale = serializers.SerializerMethodField(read_only=True)
     final_price = serializers.SerializerMethodField(read_only=True)
@@ -36,15 +45,9 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
    
         fields = [
-            'id', 'title', 'description', 'published_year', 'inventory',
-            'is_available', 'created_at', 'views', 'sold',
-            'num_pages', 'language', 'publisher',
-            'author', 'author_id',
-            'price', 'discount_percentage',
-            'final_price', 'on_sale',
-            'category', 'category_id',
-            'cover_image', 'cover_image_url',
-            'average_rating'
+            'id', 'title', 'author', 'price', 
+            'active_discount', 'final_price', 
+            'cover_image', 'inventory', 'is_available'
         ]
         
        
