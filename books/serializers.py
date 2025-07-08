@@ -10,7 +10,7 @@ class SimpleDiscountSerializer(serializers.ModelSerializer):
         model = Discount
         fields = ['name', 'discount_percent']
 
-
+        
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
@@ -36,18 +36,18 @@ class BookSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(), source='category', write_only=True
     )
     cover_image_url = serializers.SerializerMethodField(read_only=True)
-    active_discount = SimpleDiscountSerializer(source='get_active_discount', read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
-    on_sale = serializers.SerializerMethodField(read_only=True)
+    #on_sale = serializers.SerializerMethodField(read_only=True)
     final_price = serializers.SerializerMethodField(read_only=True)
+    active_discount = SimpleDiscountSerializer(source='get_active_discount', read_only=True)
 
     class Meta:
         model = Book
    
         fields = [
-            'id', 'title', 'author', 'price', 
+           'id', 'title', 'author', 'price', 
             'active_discount', 'final_price', 
-            'cover_image', 'inventory', 'is_available'
+            'cover_image', 'inventory', 'is_available','average_rating'
         ]
         
        
