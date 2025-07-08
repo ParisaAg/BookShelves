@@ -4,9 +4,24 @@ from rest_framework import serializers
 from django.db.models import Avg
 from .models import Book, Category, Author, Discount
 
-# books/serializers.py
+# --- سریالایزرهای کمکی برای نمایش ---
+class AuthorSerializer(serializers.ModelSerializer):
+    """سریالایزر ساده برای نمایش اطلاعات نویسنده"""
+    class Meta:
+        model = Author
+        fields = ['id', 'first_name', 'last_name', 'bio']
 
-# ... (کلاس‌های دیگر اینجا هستند و باقی می‌مانند) ...
+class CategorySerializer(serializers.ModelSerializer):
+    """سریالایزر ساده برای نمایش اطلاعات دسته‌بندی"""
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
+class SimpleDiscountSerializer(serializers.ModelSerializer):
+    """سریالایزر ساده برای نمایش اطلاعات تخفیف فعال روی کتاب"""
+    class Meta:
+        model = Discount
+        fields = ['name', 'discount_percent', 'end_date']
 
 
 # --- سریالایزر اصلی کتاب (نسخه کامل و نهایی) ---
@@ -24,11 +39,11 @@ class BookSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(), source='category', write_only=True, label="Category ID"
     )
     
-    # فیلدهای محاسباتی و فقط خواندنی
+    # بخش فیلدهای محاسباتی (فقط خواندنی)
     final_price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
     on_sale = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
-    cover_image_url = serializers.SerializerMethodField() # فیلد جدید برای نمایش آدرس عکس
+    cover_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
@@ -80,12 +95,13 @@ class BookSerializer(serializers.ModelSerializer):
             return round(avg, 1) if avg else 0
         return 0
 
-# ... (کلاس DiscountSerializer اینجا هست و باقی می‌ماند) ...
 
 # --- سریالایزر برای مدیریت کامل تخفیف‌ها ---
 class DiscountSerializer(serializers.ModelSerializer):
+    # در نمایش، اطلاعات کامل کتاب‌ها نشان داده می‌شود (از BookSerializer استفاده می‌کند)
     books = BookSerializer(many=True, read_only=True)
     
+    # در ورودی، فقط لیست ID کتاب‌ها دریافت می‌شود
     book_ids = serializers.PrimaryKeyRelatedField(
         queryset=Book.objects.all(), 
         source='books', 
