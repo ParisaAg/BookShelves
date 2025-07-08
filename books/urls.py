@@ -10,6 +10,7 @@ from .views import (
     LatestBooksView,
     TrendingBooksView,
     TopSellersView,
+    DiscountViewSet
     
 )
 
@@ -18,6 +19,7 @@ router = DefaultRouter()
 router.register(r'books', BookViewSet, basename='book')
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'authors', AuthorViewSet, basename='author')
+router.register(r'discounts', DiscountViewSet, basename='discount')
 urlpatterns = [
 
     path('', include(router.urls)),
@@ -25,5 +27,6 @@ urlpatterns = [
     path('latest-books/', LatestBooksView.as_view(), name='latest-books'),
     path('trending-books/', TrendingBooksView.as_view(), name='trending-books'),
     path('top-sellers/', TopSellersView.as_view(), name='top-sellers'),
+    
     
 ]
