@@ -1,87 +1,83 @@
+# books/serializers.py
 
-from .models import Book, Category, Author,Discount
 from rest_framework import serializers
 from django.db.models import Avg
-from .models import Discount
+from .models import Book, Category, Author, Discount
 
-
-class SimpleDiscountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Discount
-        fields = ['name', 'discount_percent']
-
-        
+# یک سریالایزر ساده برای نمایش اطلاعات نویسنده و دسته‌بندی در سریالایزر کتاب
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['id', 'first_name', 'last_name','bio'] 
+        fields = ['id', 'first_name', 'last_name']
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name']
 
+# یک سریالایزر ساده برای نمایش اطلاعات تخفیف فعال روی کتاب
+class SimpleDiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discount
+        fields = ['name', 'discount_percent', 'end_date']
 
 
 class BookSerializer(serializers.ModelSerializer):
-    
+    # نمایش اطلاعات کامل نویسنده و دسته‌بندی (فقط خواندنی)
     author = AuthorSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
-    
-    
+
+    # فیلدهایی برای ورودی (نوشتنی) هنگام ساخت یا ویرایش کتاب
     author_id = serializers.PrimaryKeyRelatedField(
         queryset=Author.objects.all(), source='author', write_only=True
     )
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), source='category', write_only=True
     )
-    cover_image_url = serializers.SerializerMethodField(read_only=True)
+
+    # فیلدهای محاسباتی که از مدل خوانده می‌شوند
+    final_price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
+    on_sale = serializers.SerializerMethodField(read_only=True)
     average_rating = serializers.SerializerMethodField(read_only=True)
-    #on_sale = serializers.SerializerMethodField(read_only=True)
-    final_price = serializers.SerializerMethodField(read_only=True)
+    
+    # نمایش جزئیات تخفیف فعال (اگر وجود داشته باشد)
     active_discount = SimpleDiscountSerializer(source='get_active_discount', read_only=True)
 
     class Meta:
         model = Book
-   
         fields = [
-           'id', 'title', 'author', 'price', 
-            'active_discount', 'final_price', 
-            'cover_image', 'inventory', 'is_available','average_rating'
+            'id', 'title', 'description', 'price', 
+            'final_price', 'on_sale', 'active_discount',
+            'author', 'category', 'published_year', 'inventory', 
+            'is_available', 'cover_image',
+            'average_rating', 'views', 'sold',
+            # فیلدهای نوشتاری
+            'author_id', 'category_id'
         ]
         
-       
+        # مشخص کردن فیلدهایی که فقط برای ورودی هستند و در خروجی نمایش داده نمی‌شوند
         extra_kwargs = {
-            'cover_image': {'write_only': True},
-            #'price': {'read_only': True} 
-
+            'cover_image': {'write_only': True, 'required': False},
         }
-    
-        read_only_fields = ['views', 'created_at']
 
-    def get_on_sale(self, obj):
-        return obj.discount_percentage is not None and obj.discount_percentage > 0
-            
-    def get_final_price(self, obj):
-        return obj.final_price
-    
+    def get_on_sale(self, obj: Book):
+        # این متد بررسی می‌کند که آیا تخفیف فعالی روی کتاب هست یا نه
+        return obj.get_active_discount is not None
 
-    def get_cover_image_url(self, obj):
-        if obj.cover_image and hasattr(obj.cover_image, 'url'):
-            return obj.cover_image.url
-        return None 
-
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj: Book):
+        # این متد میانگین امتیازات را محاسبه می‌کند (فرض بر وجود مدل Review)
         if hasattr(obj, 'reviews'):
             avg = obj.reviews.aggregate(avg=Avg('rating'))['avg']
             return round(avg, 1) if avg else 0
         return 0
-    
 
 
+# این سریالایزر برای مدیریت کامل تخفیف‌ها است
 class DiscountSerializer(serializers.ModelSerializer):
+    # برای نمایش، اطلاعات کامل کتاب‌هایی که شامل تخفیف هستند را نشان می‌دهیم
     books = BookSerializer(many=True, read_only=True)
     
+    # برای ورودی (ساخت یا ویرایش تخفیف)، فقط ID کتاب‌ها را دریافت می‌کنیم
     book_ids = serializers.PrimaryKeyRelatedField(
         queryset=Book.objects.all(), 
         source='books', 
@@ -92,12 +88,6 @@ class DiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
         fields = [
-            'id', 
-            'name', 
-            'discount_percent', 
-            'start_date', 
-            'end_date', 
-            'is_active',
-            'books',      # این فیلد برای نمایش (GET) است
-            'book_ids'    # این فیلد برای ورودی (POST, PUT) است
+            'id', 'name', 'discount_percent', 'start_date', 'end_date', 
+            'is_active', 'books', 'book_ids'
         ]
