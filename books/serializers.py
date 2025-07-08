@@ -4,27 +4,12 @@ from rest_framework import serializers
 from django.db.models import Avg
 from .models import Book, Category, Author, Discount
 
-# --- سریالایزرهای کمکی برای نمایش ---
-class AuthorSerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات نویسنده"""
-    class Meta:
-        model = Author
-        fields = ['id', 'first_name', 'last_name', 'bio']
+# books/serializers.py
 
-class CategorySerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات دسته‌بندی"""
-    class Meta:
-        model = Category
-        fields = ['id', 'name']
-
-class SimpleDiscountSerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات تخفیف فعال روی کتاب"""
-    class Meta:
-        model = Discount
-        fields = ['name', 'discount_percent', 'end_date']
+# ... (کلاس‌های دیگر اینجا هستند و باقی می‌مانند) ...
 
 
-# --- سریالایزر اصلی کتاب (نسخه نهایی و اصلاح شده) ---
+# --- سریالایزر اصلی کتاب (نسخه کامل و نهایی) ---
 class BookSerializer(serializers.ModelSerializer):
     # بخش نمایشی (فقط خواندنی)
     author = AuthorSerializer(read_only=True)
@@ -39,31 +24,50 @@ class BookSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(), source='category', write_only=True, label="Category ID"
     )
     
-    # بخش فیلدهای محاسباتی (فقط خواندنی)
+    # فیلدهای محاسباتی و فقط خواندنی
     final_price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
     on_sale = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
+    cover_image_url = serializers.SerializerMethodField() # فیلد جدید برای نمایش آدرس عکس
 
     class Meta:
         model = Book
-        # لیست کامل و نهایی تمام فیلدها برای جلوگیری از خطای AssertionError
+        # --- لیست کامل و نهایی تمام فیلدها ---
         fields = [
+            # فیلدهای اصلی
             'id', 'title', 'description', 'price', 
-            'final_price', 'on_sale', 'active_discount',
-            'author', 'category', 'published_year', 
-            'inventory', 'is_available', 'cover_image', 
-            'average_rating', 'views', 'sold', 'num_pages', 
-            'language', 'publisher', 'created_at',
+            'inventory', 'is_available', 'published_year', 
+            'num_pages', 'language', 'publisher',
             
-            # فیلدهای نوشتاری که حتما باید در لیست باشند
+            # فیلدهای محاسباتی و تخفیف
+            'final_price', 'on_sale', 'active_discount',
+            'average_rating',
+            
+            # فیلدهای مربوط به روابط (نمایشی)
+            'author', 'category', 
+            
+            # فیلدهای مربوط به آمار و تاریخ
+            'views', 'sold', 'created_at',
+
+            # فیلد نمایشی عکس
+            'cover_image_url',
+            
+            # --- فیلدهای فقط نوشتنی (برای ورودی POST/PUT) ---
+            'cover_image', # برای آپلود فایل
             'author_id', 
-            'category_id'
+            'category_id',
         ]
         
         extra_kwargs = {
-            # فیلد عکس فقط برای ورودی (آپلود) است و در خروجی نمایش داده نمی‌شود
+            # فیلد آپلود عکس فقط برای ورودی است
             'cover_image': {'write_only': True, 'required': False},
         }
+
+    def get_cover_image_url(self, obj: Book) -> str | None:
+        """آدرس URL عکس را برای نمایش در خروجی برمی‌گرداند"""
+        if obj.cover_image and hasattr(obj.cover_image, 'url'):
+            return obj.cover_image.url
+        return None
 
     def get_on_sale(self, obj: Book) -> bool:
         """بررسی می‌کند که آیا کتاب تخفیف فعال دارد یا خیر"""
@@ -76,6 +80,7 @@ class BookSerializer(serializers.ModelSerializer):
             return round(avg, 1) if avg else 0
         return 0
 
+# ... (کلاس DiscountSerializer اینجا هست و باقی می‌ماند) ...
 
 # --- سریالایزر برای مدیریت کامل تخفیف‌ها ---
 class DiscountSerializer(serializers.ModelSerializer):
