@@ -5,19 +5,16 @@ from django.db.models import Avg
 from .models import Book, Category, Author, Discount
 
 class AuthorSerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات نویسنده"""
     class Meta:
         model = Author
         fields = ['id', 'first_name', 'last_name', 'bio']
 
 class CategorySerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات دسته‌بندی"""
     class Meta:
         model = Category
         fields = ['id', 'name']
 
 class SimpleDiscountSerializer(serializers.ModelSerializer):
-    """سریالایزر ساده برای نمایش اطلاعات تخفیف فعال روی کتاب"""
     class Meta:
         model = Discount
         fields = ['name', 'discount_percent', 'end_date']
