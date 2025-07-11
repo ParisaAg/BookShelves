@@ -161,6 +161,22 @@ class BookViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(discounted_books, many=True)
         return Response(serializer.data)
+    @action(detail=True, methods=['get'])
+    def related(self, request, pk=None):
+
+        book = self.get_object()
+
+        if not book.category:
+            return Response([])
+        
+        related_books = Book.objects.filter(
+            category=book.category
+        ).exclude(
+            pk=book.pk
+        ).order_by('?')[:5]
+
+        serializer = self.get_serializer(related_books, many=True)
+        return Response(serializer.data)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
