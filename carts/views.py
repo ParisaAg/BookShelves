@@ -1,69 +1,66 @@
-from rest_framework import generics, permissions,status
-from rest_framework.views import APIView
-from .models import Cart,CartItem
+
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .serializers import CartSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from .models import Cart, CartItem, Book
+from .serializers import CartSerializer, CartItemSerializer, SimpleBookSerializer 
 
-class CartDetailView(generics.RetrieveAPIView):
-    serializer_class = CartSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class CartViewSet(viewsets.ViewSet):
 
-    def get_object(self):
-        cart, created = Cart.objects.get_or_create(user=self.request.user)
-        return cart
-    
+    permission_classes = [IsAuthenticated]
 
+    def list(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data)
 
-    
-class AddToCartView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
+    def create(self, request):
         book_id = request.data.get('book_id')
-        quantity = request.data.get('quantity', 1)
+        quantity = int(request.data.get('quantity', 1))
+
+        if not book_id:
+            return Response({'error': 'Book ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            return Response({'error': 'Book not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         cart, _ = Cart.objects.get_or_create(user=request.user)
-        item, created = CartItem.objects.get_or_create(cart=cart, book_id=book_id)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
 
         if not created:
-            item.quantity += int(quantity)
+            cart_item.quantity += quantity
         else:
-            item.quantity = int(quantity)
+            cart_item.quantity = quantity
+        
+        cart_item.save()
+        return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
 
-        item.save()
-        return Response({'message': 'Book added to cart'}, status=status.HTTP_200_OK)
-    
-
-
-
-class UpdateCartItemView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def patch(self, request, item_id):
+    def destroy(self, request, pk=None):
         try:
-            item = CartItem.objects.get(id=item_id, cart__user=request.user)
-        except CartItem.DoesNotExist:
-            return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        item.quantity = int(request.data.get('quantity', item.quantity))
-        item.save()
-        return Response({'message': 'Quantity updated'}, status=status.HTTP_200_OK)
-
-class RemoveCartItemView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def delete(self, request, item_id):
-        try:
-            item = CartItem.objects.get(id=item_id, cart__user=request.user)
+            item = CartItem.objects.get(id=pk, cart__user=request.user)
             item.delete()
-            return Response({'message': 'Item removed'}, status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except CartItem.DoesNotExist:
-            return Response({'error': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Item not found in your cart.'}, status=status.HTTP_404_NOT_FOUND)
 
-class ClearCartView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    def partial_update(self, request, pk=None):
+        quantity = int(request.data.get('quantity', 0))
+        if quantity <= 0:
+            return self.destroy(request, pk)
+            
+        try:
+            item = CartItem.objects.get(id=pk, cart__user=request.user)
+            item.quantity = quantity
+            item.save()
+            return Response(CartItemSerializer(item).data, status=status.HTTP_200_OK)
+        except CartItem.DoesNotExist:
+            return Response({'error': 'Item not found in your cart.'}, status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, request):
+    @action(detail=False, methods=['delete'])
+    def clear(self, request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart.items.all().delete()
-        return Response({'message': 'Cart cleared'}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
