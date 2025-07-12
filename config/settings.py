@@ -50,8 +50,8 @@ INSTALLED_APPS = [
     'extra',
     'reviews',
     'contact',
+    'wishlist'
   
-
 ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
