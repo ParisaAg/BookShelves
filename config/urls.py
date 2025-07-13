@@ -13,4 +13,6 @@ urlpatterns = [
     path('api/sliders/', include('sliders.urls')),
     path('api/extra/', include('extra.urls')),
     path('api/contact/', include('contact.urls')),
+    path('api/', include('wishlists.urls')),
+
 ]
