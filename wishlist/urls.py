@@ -8,4 +8,4 @@ router = DefaultRouter()
 
 router.register(r'wishlist', WishlistViewSet, basename='wishlist')
 
-urlpatterns = router.urls
+urlpatterns = router.urls   
