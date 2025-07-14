@@ -140,7 +140,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
+            
 CSRF_TRUSTED_ORIGINS = [
     'https://bookshelves.liara.run',
     'http://localhost:5173',
