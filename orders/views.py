@@ -1,97 +1,48 @@
-from django.shortcuts import render
-
-from rest_framework import generics, permissions,status
-from .models import Order,OrderItem
-from carts.models import Cart
-from .serializers import OrderSerializer,OrderInvoiceSerializer
-from rest_framework.views import APIView
+# orders/views.py
+from django.db import transaction
+from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Order, OrderItem
+from carts.models import Cart
+from .serializers import OrderSerializer
 
-
-class OrderCreateView(generics.CreateAPIView):
-    queryset = Order.objects.all()
+class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        cart, _ = Cart.objects.get_or_create(user=user)
-        cart_items = cart.items.all()
-
-        if not cart_items.exists():
-            raise ValueError("Cart is empty.")
-
-        order = serializer.save(user=user)
-
-        for item in cart_items:
-            if item.quantity > item.book.inventory:
-                raise ValueError(f"Not enough inventory for '{item.book.title}'.")
-
-            OrderItem.objects.create(
-                order=order,
-                book=item.book,
-                quantity=item.quantity,
-                price=item.book.final_price
-            )
-
-   
-            item.book.sold += item.quantity
-            item.book.inventory = max(item.book.inventory - item.quantity, 0)
-            item.book.save()
-
-        cart_items.delete()
-
-
-class UserOrderListView(generics.ListAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).order_by('-created_at')
+        return Order.objects.prefetch_related('items__book').filter(user=self.request.user)
 
+    @transaction.atomic 
+    def create(self, request, *args, **kwargs):
 
-
-
-class OrderDetailView(generics.RetrieveAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        
-        return Order.objects.filter(user=self.request.user)
-    
-
-
-
-class CancelOrderView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, pk):
         try:
-            order = Order.objects.get(pk=pk, user=request.user)
-        except Order.DoesNotExist:
-            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+            cart = Cart.objects.get(user=request.user)
+            if cart.items.count() == 0:
+                return Response({'error': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
+        except Cart.DoesNotExist:
+            return Response({'error': 'You do not have a cart.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if order.status != 'pending':
-            return Response({"detail": "Only pending orders can be cancelled."}, status=status.HTTP_400_BAD_REQUEST)
+        order = Order.objects.create(user=request.user)
+        
+        total_price = 0
+        for cart_item in cart.items.all():
+            order_item = OrderItem.objects.create(
+                order=order,
+                book=cart_item.book,
+                quantity=cart_item.quantity,
+                unit_price=cart_item.book.final_price
+            )
+            total_price += order_item.quantity * order_item.unit_price
+            
+            if cart_item.book.book_type != 'digital':
+                cart_item.book.inventory -= cart_item.quantity
+                cart_item.book.save(update_fields=['inventory'])
 
-        order.status = 'cancelled'
+        order.total_price = total_price
         order.save()
 
-        return Response({"detail": "Order cancelled successfully."}, status=status.HTTP_200_OK)
-    
-
-
-
-class OrderInvoiceView(generics.RetrieveAPIView):
-    serializer_class = OrderInvoiceSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
-
-    def get_object(self):
-        obj = super().get_object()
-        if obj.user != self.request.user:
-            raise PermissionDenied("you don't have permission to access this order.")
-        return obj
+        cart.items.all().delete()
+        serializer = self.get_serializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
