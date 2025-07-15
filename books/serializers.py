@@ -1,4 +1,3 @@
-# books/serializers.py
 
 from rest_framework import serializers
 from django.db.models import Avg
@@ -76,7 +75,6 @@ class BookSerializer(serializers.ModelSerializer):
         return 0
 
 
-# --- سریالایزر برای مدیریت کامل تخفیف‌ها ---
 class DiscountSerializer(serializers.ModelSerializer):
     books = BookSerializer(many=True, read_only=True)
     
