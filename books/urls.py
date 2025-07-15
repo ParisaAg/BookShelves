@@ -12,6 +12,7 @@ from .views import (
     TrendingBooksView,
     TopSellersView,
     DiscountViewSet,
+    PopularCategoriesView ,
   
 )
 
@@ -28,9 +29,13 @@ urlpatterns = [
 
     path('', include(router.urls)),
     path('', include(books_router.urls)),
+
+
+    
     path('latest-books/', LatestBooksView.as_view(), name='latest-books'),
     path('trending-books/', TrendingBooksView.as_view(), name='trending-books'),
     path('top-sellers/', TopSellersView.as_view(), name='top-sellers'),
-    
+    path('popular-cat/', PopularCategoriesView.as_view(), name='popular-cat'),
+
     
 ]

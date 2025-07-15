@@ -1,16 +1,16 @@
-# books/views.py
-
+from django.db.models import Sum
 from django.utils import timezone
 from rest_framework import viewsets, generics, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-
 from .models import Book, Category, Author, Discount
 from .serializers import BookSerializer, CategorySerializer, AuthorSerializer, DiscountSerializer
-from .permission import IsAdminOrStaff  # فرض بر وجود این فایل
-from orders.models import Order # برای بررسی سابقه خرید کاربر
+from .permission import IsAdminOrStaff  
+from orders.models import Order 
+
+
 
 class BookViewSet(viewsets.ModelViewSet):
 
@@ -91,3 +91,16 @@ class TrendingBooksView(generics.ListAPIView):
 class TopSellersView(generics.ListAPIView):
     serializer_class = BookSerializer
     queryset = Book.objects.select_related('author', 'category').order_by('-sold')[:10]
+
+
+class PopularCategoriesView(generics.ListAPIView):
+
+    serializer_class = CategorySerializer 
+    
+    def get_queryset(self):
+        queryset = Category.objects.annotate(
+            total_sold=Sum('books__sold')
+        ).order_by('-total_sold')[:5] 
+        
+        return queryset
+    
