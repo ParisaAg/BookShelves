@@ -32,7 +32,7 @@ class BookSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(), source='category', write_only=True, label="Category ID"
     )
     
-    final_price = serializers.DecimalField(max_digits=6, decimal_places=2, read_only=True)
+    final_price = serializers.SerializerMethodField()
     on_sale = serializers.SerializerMethodField()
     average_rating = serializers.SerializerMethodField()
     cover_image_url = serializers.SerializerMethodField()
@@ -42,17 +42,10 @@ class BookSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'price', 
             'inventory', 'is_available', 'published_year', 
-            'num_pages', 'language', 'publisher',
-            
+            'num_pages', 'language', 'publisher', 'book_type',
             'final_price', 'on_sale', 'active_discount',
-            'average_rating',
-            
-            'author', 'category', 
-    
-            'views', 'sold', 'created_at',
-
-            'cover_image_url',
-            
+            'average_rating', 'author', 'category', 'views', 
+            'sold', 'created_at', 'cover_image_url',
             'cover_image', 
             'author_id', 
             'category_id',
@@ -61,6 +54,12 @@ class BookSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'cover_image': {'write_only': True, 'required': False},
         }
+
+    def get_final_price(self, obj: Book):
+        numeric_price = obj.final_price
+        if numeric_price == 0:
+            return "رایگان"
+        return numeric_price
 
     def get_cover_image_url(self, obj: Book) -> str | None:
         if obj.cover_image and hasattr(obj.cover_image, 'url'):
@@ -77,6 +76,7 @@ class BookSerializer(serializers.ModelSerializer):
         return 0
 
 
+# --- سریالایزر برای مدیریت کامل تخفیف‌ها ---
 class DiscountSerializer(serializers.ModelSerializer):
     books = BookSerializer(many=True, read_only=True)
     
