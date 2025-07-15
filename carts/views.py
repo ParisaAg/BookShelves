@@ -3,8 +3,10 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-from .models import Cart, CartItem, Book
-from .serializers import CartSerializer, CartItemSerializer, SimpleBookSerializer 
+
+from .models import Cart, CartItem
+from books.models import Book 
+from .serializers import CartSerializer, CartItemSerializer
 
 class CartViewSet(viewsets.ViewSet):
 
@@ -27,6 +29,12 @@ class CartViewSet(viewsets.ViewSet):
         except Book.DoesNotExist:
             return Response({'error': 'Book not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+        if book.book_type == Book.BookType.DIGITAL:
+            return Response(
+                {'error': 'کتاب‌های دیجیتال قابل افزودن به سبد خرید نیستند. لطفاً از لینک دانلود استفاده کنید.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_item, created = CartItem.objects.get_or_create(cart=cart, book=book)
 
@@ -40,6 +48,7 @@ class CartViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         try:
+            # توجه: pk شناسه CartItem است
             item = CartItem.objects.get(id=pk, cart__user=request.user)
             item.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,38 +1,51 @@
 
 from rest_framework import serializers
 from .models import Cart, CartItem
-from books.models import Book 
+from books.models import Book
 
 class SimpleBookSerializer(serializers.ModelSerializer):
+    final_price = serializers.ReadOnlyField() 
+    cover_image_url = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Book
-        fields = ['id', 'title', 'price', 'cover_image']
+        fields = ['id', 'title', 'cover_image_url', 'final_price']
+        
+    def get_cover_image_url(self, obj: Book) -> str | None:
+        if obj.cover_image and hasattr(obj.cover_image, 'url'):
+            return obj.cover_image.url
+        return None
 
 
 class CartItemSerializer(serializers.ModelSerializer):
     book = SimpleBookSerializer(read_only=True)
-    book_id = serializers.PrimaryKeyRelatedField(
-        queryset=Book.objects.all(), source='book', write_only=True
-    )
-    total_price = serializers.SerializerMethodField()
+    # پراپرتی total_price از مدل CartItem خوانده می‌شود
+    total_price = serializers.ReadOnlyField() 
 
     class Meta:
         model = CartItem
-        fields = ['id', 'book', 'book_id', 'quantity', 'total_price']
-
-    def get_total_price(self, cart_item: CartItem):
-        return cart_item.quantity * cart_item.book.price
+        fields = ['id', 'book', 'quantity', 'total_price']
 
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
-    total_price = serializers.SerializerMethodField()
+    total_price = serializers.ReadOnlyField()
 
     class Meta:
         model = Cart
+        fields = ['id', 'user', 'created_at', 'items', 'total_price']
 
-        fields = ['id', 'created_at', 'items', 'total_price']
 
-    def get_total_price(self, cart: Cart):
 
-        return sum([item.quantity * item.book.price for item in cart.items.all()])
+class AddCartItemSerializer(serializers.Serializer):
+    book_id = serializers.IntegerField()
+    quantity = serializers.IntegerField(min_value=1, default=1)
+
+    def validate_book_id(self, value):
+        if not Book.objects.filter(pk=value).exists():
+            raise serializers.ValidationError("No book with the given ID was found.")
+        return value
+
+
+class UpdateCartItemSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField(min_value=1)
