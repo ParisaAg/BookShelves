@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.db.models import Avg
 from .models import Book, Category, Author, Discount
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
@@ -17,6 +18,18 @@ class SimpleDiscountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discount
         fields = ['name', 'discount_percent', 'end_date']
+
+class SimpleBookSerializer(serializers.ModelSerializer):
+    cover_image_url = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'cover_image_url']
+        
+    def get_cover_image_url(self, obj: Book) -> str | None:
+        if obj.cover_image and hasattr(obj.cover_image, 'url'):
+            return obj.cover_image.url
+        return None
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -39,15 +52,13 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = [
-            'id', 'title', 'description', 'price', 
+            'id', 'title', 'description', 'price', 'level',
             'inventory', 'is_available', 'published_year', 
             'num_pages', 'language', 'publisher', 'book_type',
             'final_price', 'on_sale', 'active_discount',
             'average_rating', 'author', 'category', 'views', 
             'sold', 'created_at', 'cover_image_url',
-            'cover_image', 
-            'author_id', 
-            'category_id',
+            'cover_image', 'author_id', 'category_id',
         ]
         
         extra_kwargs = {
@@ -76,7 +87,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class DiscountSerializer(serializers.ModelSerializer):
-    books = BookSerializer(many=True, read_only=True)
+    books = SimpleBookSerializer(many=True, read_only=True)
     
     book_ids = serializers.PrimaryKeyRelatedField(
         queryset=Book.objects.all(), 

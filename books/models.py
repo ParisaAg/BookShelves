@@ -4,14 +4,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.utils import timezone
 
-# این مدل بدون تغییر است
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
-# این مدل بدون تغییر است
 class Author(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -27,6 +25,10 @@ class Book(models.Model):
         DIGITAL = 'digital', 'دیجیتال'
         BOTH = 'both', 'هر دو نسخه'
 
+    class BookLevel(models.TextChoices):
+        BEGINNER = 'beginner', 'مبتدی'
+        INTERMEDIATE = 'intermediate', 'متوسط'
+        ADVANCED = 'advanced', 'پیشرفته'
 
     title = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
@@ -45,6 +47,7 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     book_type = models.CharField(max_length=10, choices=BookType.choices, default=BookType.PHYSICAL)
     digital_file_link = models.URLField(max_length=1024, null=True, blank=True, verbose_name="لینک فایل دیجیتال")
+    level = models.CharField(max_length=20, choices=BookLevel.choices, blank=True, null=True, verbose_name="سطح کتاب")
 
 
     @property
