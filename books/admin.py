@@ -1,15 +1,13 @@
 from django.contrib import admin
 from .models import Author, Category, Book, Discount
 
-
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'parent', 'slug', 'is_active')
     list_filter = ('is_active', 'parent')
     search_fields = ('name',)
-    
-    # این خط را اضافه کنید
     prepopulated_fields = {'slug': ('name',)}
+
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name')
@@ -29,3 +27,6 @@ class DiscountAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     search_fields = ('name',)
     filter_horizontal = ('books',) # A better UI for ManyToMany fields
+
+
+
