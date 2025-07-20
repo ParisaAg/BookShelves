@@ -6,7 +6,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'parent', 'slug', 'is_active')
     list_filter = ('is_active', 'parent')
     search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)} 
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
