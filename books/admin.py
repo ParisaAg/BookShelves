@@ -27,3 +27,12 @@ class DiscountAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     search_fields = ('name',)
     filter_horizontal = ('books',) # A better UI for ManyToMany fields
+
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'parent', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'subtitle', 'description']
+    prepopulated_fields = {'slug': ('name',)}
