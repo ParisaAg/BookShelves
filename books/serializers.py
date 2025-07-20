@@ -10,9 +10,29 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'bio']
 
 class CategorySerializer(serializers.ModelSerializer):
+    parent_name = serializers.CharField(source='parent.name', read_only=True, allow_null=True)
+    
+    children = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Category
-        fields = ['id', 'name']
+        fields = [
+            'id', 
+            'name', 
+            'slug', 
+            'parent',  
+            'parent_name', 
+            'children'
+        ]
+        
+        extra_kwargs = {
+            'parent': {'write_only': True, 'required': False}
+        }
+
+    def get_children(self, obj):
+
+        children = obj.children.filter(is_active=True)
+        return CategorySerializer(children, many=True, context=self.context).data
 
 class SimpleDiscountSerializer(serializers.ModelSerializer):
     class Meta:

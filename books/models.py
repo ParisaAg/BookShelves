@@ -3,12 +3,43 @@ from cloudinary.models import CloudinaryField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from django.utils import timezone
+from autoslug import AutoSlugField
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=255, unique=True, verbose_name="نام دسته‌بندی")
+    subtitle = models.CharField(max_length=255, blank=True, verbose_name="زیرعنوان")
+
+    parent = models.ForeignKey(
+        'self', 
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
+        verbose_name="دسته‌بندی والد"
+    )
+    
+    slug = AutoSlugField(populate_from='name', unique=True, always_update=True, null=True, blank=True)
+    
+    description = models.TextField(blank=True, verbose_name="توضیحات")
+    
+    image = CloudinaryField(null=True, blank=True, folder='category_images', verbose_name="تصویر دسته‌بندی")
+
+    is_active = models.BooleanField(default=True, verbose_name="فعال است؟")
+
+    class Meta:
+        verbose_name = "دسته‌بندی"
+        verbose_name_plural = "دسته‌بندی‌ها"
+        constraints = [
+            models.CheckConstraint(check=~models.Q(pk=models.F('parent')), name='prevent_self_parentage')
+        ]
 
     def __str__(self):
-        return self.name
+        full_path = [self.name]
+        k = self.parent
+        while k is not None:
+            full_path.append(k.name)
+            k = k.parent
+        return ' -> '.join(full_path[::-1])
 
 class Author(models.Model):
     first_name = models.CharField(max_length=255)

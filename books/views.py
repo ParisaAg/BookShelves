@@ -62,11 +62,17 @@ class BookViewSet(viewsets.ModelViewSet):
             return Response({'error': 'You must purchase this book to download it.'}, status=status.HTTP_403_FORBIDDEN)
 
 
+
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrStaff]
-    pagination_class = None
+    permission_classes = [IsAdminOrStaff] # یا سطح دسترسی مورد نظر شما
+    
+    def get_queryset(self):
+
+        if self.action == 'list':
+            return Category.objects.filter(parent__isnull=True, is_active=True)
+        
+        return Category.objects.filter(is_active=True)
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
