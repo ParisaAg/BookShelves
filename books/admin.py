@@ -26,7 +26,7 @@ class DiscountAdmin(admin.ModelAdmin):
     list_display = ('name', 'discount_percent', 'start_date', 'end_date', 'is_active')
     list_filter = ('is_active',)
     search_fields = ('name',)
-    filter_horizontal = ('books',) # A better UI for ManyToMany fields
+    filter_horizontal = ('books',)
 
 
 

@@ -19,7 +19,6 @@ class SimpleBookSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     book = SimpleBookSerializer(read_only=True)
-    # پراپرتی total_price از مدل CartItem خوانده می‌شود
     total_price = serializers.ReadOnlyField() 
 
     class Meta:
