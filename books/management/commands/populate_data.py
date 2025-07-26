@@ -10,7 +10,7 @@ from django.db import transaction
 class Command(BaseCommand):
     help = 'Populates the database with rich fake data, including images.'
 
-    @transaction.atomic # تمام عملیات را در یک تراکنش قرار می دهیم
+    @transaction.atomic 
     def handle(self, *args, **kwargs):
         self.stdout.write('Deleting old data...')
         Book.objects.all().delete()
@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         self.stdout.write('Creating authors...')
         authors_list = []
-        for _ in range(25): # تعداد را کمتر می کنیم تا سریع تر باشد
+        for _ in range(25): 
             authors_list.append(
                 Author(
                     first_name=faker.first_name(),
@@ -42,12 +42,11 @@ class Command(BaseCommand):
         self.stdout.write('Creating books with images (this may take a while)...')
         all_categories = list(Category.objects.all())
         
-        # کتاب‌ها را یکی یکی می سازیم تا عکس آپلود شود
-        for i in range(50): # تعداد را به ۵۰ کاهش می دهیم تا زمان اجرا منطقی باشد
+
+        for i in range(50): 
             author = random.choice(all_authors)
             category = random.choice(all_categories)
             
-            # ساخت آبجکت کتاب
             book = Book(
                 title=' '.join(faker.words(nb=random.randint(2, 6))).title(),
                 author=author,
@@ -61,10 +60,9 @@ class Command(BaseCommand):
                 num_pages=random.randint(80, 1200),
                 language=random.choice(['English', 'Persian', 'French', 'German', 'Spanish']),
                 publisher=faker.company(),
-                # آدرس یک عکس تصادفی را به فیلد عکس می دهیم
+
                 cover_image=f'https://picsum.photos/400/600?random={i}'
             )
-            # ذخیره کردن آبجکت که باعث آپلود عکس هم می شود
             book.save()
             self.stdout.write(f'  - Created book: "{book.title}"')
 

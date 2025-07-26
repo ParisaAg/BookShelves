@@ -9,7 +9,7 @@ from .models import Book, Category, Author, Discount
 from .serializers import BookSerializer, CategorySerializer, AuthorSerializer, DiscountSerializer
 from .permission import IsAdminOrStaff  
 from orders.models import Order 
-
+from .filters import BookFilter
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -18,8 +18,15 @@ class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.select_related('author', 'category').prefetch_related('discounts', 'reviews').all().order_by('-created_at')
     
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category__id', 'author__id', 'is_available', 'book_type']
-    search_fields = ['title', 'author__first_name', 'author__last_name', 'description']
+    filterset_class = BookFilter
+    search_fields = [
+        'title',
+        'author__first_name',
+        'author__last_name',
+        'category__name',
+        'publisher',
+        'description'
+    ]
     ordering_fields = ['published_year', 'price', 'views', 'sold']
 
     def get_permissions(self):

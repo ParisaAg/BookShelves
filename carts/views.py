@@ -9,9 +9,7 @@ from .models import Cart, CartItem, Book
 from .serializers import CartSerializer, AddCartItemSerializer, UpdateCartItemSerializer,CartItemSerializer
 
 class CartViewSet(viewsets.ModelViewSet):
-    """
-    A complete ViewSet for managing the user's shopping cart.
-    """
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -23,7 +21,7 @@ class CartViewSet(viewsets.ModelViewSet):
             return AddCartItemSerializer
         if self.action == 'update' or self.action == 'partial_update':
             return UpdateCartItemSerializer
-        return CartItemSerializer # Default serializer for lists/details
+        return CartItemSerializer 
 
     def list(self, request, *args, **kwargs):
 
