@@ -72,7 +72,7 @@ class BookViewSet(viewsets.ModelViewSet):
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrStaff] # یا سطح دسترسی مورد نظر شما
+    permission_classes = [IsAdminOrStaff] 
     
     def get_queryset(self):
 
