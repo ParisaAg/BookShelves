@@ -14,6 +14,4 @@ class BookFilter(filters.FilterSet):
             'is_available': ['exact'],
             'category__id': ['exact'],
             'author__id': ['exact'],
-
-    
         }

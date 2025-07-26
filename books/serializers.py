@@ -79,6 +79,7 @@ class BookSerializer(serializers.ModelSerializer):
             'average_rating', 'author', 'category', 'views', 
             'sold', 'created_at', 'cover_image_url',
             'cover_image', 'author_id', 'category_id',
+            'level'
         ]
         
         extra_kwargs = {
