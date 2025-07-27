@@ -16,6 +16,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         book_pk = self.kwargs.get('book_pk')
         return Review.objects.filter(book_id=book_pk)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        book_pk = self.kwargs.get('book_pk')
+        if book_pk:
+            context['book'] = Book.objects.get(pk=book_pk)
+        return context
 
     def perform_create(self, serializer):
         book_pk = self.kwargs.get('book_pk')

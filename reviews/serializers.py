@@ -16,3 +16,13 @@ class ReviewSerializer(serializers.ModelSerializer):
                 }
                        }
         }
+    def validate(self, data):
+
+            user = self.context['request'].user
+            book = self.context['book']
+            comment_text = data.get('comment', '')
+
+            if Review.objects.filter(user=user, book=book, comment__iexact=comment_text).exists():
+                raise serializers.ValidationError("این نظر شما قبلا ثبت شده است. لطفا نظر تکراری قرار ندهید.")
+
+            return data
