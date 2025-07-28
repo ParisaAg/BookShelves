@@ -5,7 +5,7 @@ from .models import Post, BlogCategory, Tag, PostImage
 class BlogCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)} 
+    #prepopulated_fields = {'slug': ('name',)} 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'category', 'status', 'published_at')
     list_filter = ('status', 'category', 'author', 'created_at')
     search_fields = ('title', 'content')
-    prepopulated_fields = {'slug': ('title',)}
+    #prepopulated_fields = {'slug': ('title',)}
     autocomplete_fields = ('author', 'category', 'tags')
     inlines = [PostImageInline] 
     list_editable = ('status',)
