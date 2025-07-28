@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from rest_framework import generics, viewsets
 from .models import Profile
+from django.core.cache import cache
+from rest_framework.permissions import IsAdminUser
 
 # Create your views here.
 class RegisterView(APIView):
@@ -116,3 +118,24 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+
+
+class OnlineUsersView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        online_keys = cache.keys('online-user-*')
+        online_user_ids = [int(key.split('-')[-1]) for key in online_keys]
+        
+        online_users = User.objects.filter(id__in=online_user_ids)
+        
+        serialized_users = [
+            {'id': user.id, 'username': user.username, 'last_seen': cache.get(f'online-user-{user.id}')}
+            for user in online_users
+        ]
+
+        return Response({
+            'online_count': len(online_user_ids),
+            'online_users': serialized_users
+        })
