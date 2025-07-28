@@ -21,15 +21,15 @@ class RegisterView(APIView):
         try:
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "your account has been successfully"}, status=status.HTTP_201_CREATED)
+                return Response({"message": "حساب کاربری شما با موفقیت ایجاد شد."}, status=status.HTTP_201_CREATED)
             return Response({
                 "errors": serializer.errors,
-                "message": "There was a problem with your registration data."
+                "message": "مشکلی در داده‌های ثبت‌ نام شما وجود دارد."
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({
                 "error": str(e),
-                "message": "An unexpected error occurred during registration."
+                "message": "یک خطای غیرمنتظره در حین ثبت‌ نام رخ داد."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
@@ -46,9 +46,8 @@ class LoginView(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "ایمیل یا رمز عبور نامعتبر است."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Authenticate using email and password
         if user.check_password(password):
             refresh = RefreshToken.for_user(user)
             response = Response()
@@ -60,7 +59,7 @@ class LoginView(APIView):
                 samesite='Lax'
             )
             response.data = {
-                "message": 'you are logged in now',
+                "message": 'شما با موفقیت وارد شدید.',
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
                 "username": user.username,
@@ -69,8 +68,8 @@ class LoginView(APIView):
             }
             return response
         else:
-            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
-        
+            return Response({"error": "ایمیل یا رمز عبور نامعتبر است."}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class CheckAuthView(APIView):
@@ -102,7 +101,7 @@ class UserProfileView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        response = Response({"message":'you are logged out now'}, status=status.HTTP_200_OK)
+        response = Response({"message":'شما با موفقیت خارج شدید.'}, status=status.HTTP_200_OK)
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
         return 

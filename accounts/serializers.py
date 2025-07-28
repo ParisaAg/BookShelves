@@ -58,7 +58,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.bio = validated_data.get('bio', instance.bio)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         
-        # Handle file upload for updates
         if 'profile_picture' in self.initial_data:
              instance.profile_picture = self.initial_data['profile_picture']
 
