@@ -1,4 +1,3 @@
-# blog/admin.py
 from django.contrib import admin
 from .models import Post, BlogCategory, Tag, PostImage
 
@@ -12,7 +11,6 @@ class BlogCategoryAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
 
 class PostImageInline(admin.TabularInline):
 
