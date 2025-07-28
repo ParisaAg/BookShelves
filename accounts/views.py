@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer,ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +9,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User  
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
+from rest_framework import generics, viewsets
+from .models import Profile
 
 # Create your views here.
 class RegisterView(APIView):
@@ -107,3 +109,11 @@ class LogoutView(APIView):
         
 
 
+class ProfileView(generics.RetrieveUpdateAPIView):
+
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile
