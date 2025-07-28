@@ -3,6 +3,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from .models import Profile
 from django.shortcuts import render
+from django.urls import path
+from django.core.cache import cache
 
 
 
