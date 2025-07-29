@@ -34,7 +34,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', required=False)
     email = serializers.EmailField(source='user.email', required=False)
 
-    # Explicitly define the profile_picture field to control its output
     profile_picture = serializers.SerializerMethodField()
 
     class Meta:
