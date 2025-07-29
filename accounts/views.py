@@ -121,21 +121,21 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 
-class OnlineUsersView(APIView):
-    permission_classes = [IsAdminUser]
+# class OnlineUsersView(APIView):
+#     permission_classes = [IsAdminUser]
 
-    def get(self, request):
-        online_keys = cache.keys('online-user-*')
-        online_user_ids = [int(key.split('-')[-1]) for key in online_keys]
+#     def get(self, request):
+#         online_keys = cache.keys('online-user-*')
+#         online_user_ids = [int(key.split('-')[-1]) for key in online_keys]
         
-        online_users = User.objects.filter(id__in=online_user_ids)
+#         online_users = User.objects.filter(id__in=online_user_ids)
         
-        serialized_users = [
-            {'id': user.id, 'username': user.username, 'last_seen': cache.get(f'online-user-{user.id}')}
-            for user in online_users
-        ]
+#         serialized_users = [
+#             {'id': user.id, 'username': user.username, 'last_seen': cache.get(f'online-user-{user.id}')}
+#             for user in online_users
+#         ]
 
-        return Response({
-            'online_count': len(online_user_ids),
-            'online_users': serialized_users
-        })
+#         return Response({
+#             'online_count': len(online_user_ids),
+#             'online_users': serialized_users
+#         })
