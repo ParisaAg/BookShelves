@@ -6,6 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Order, OrderItem
 from carts.models import Cart
 from .serializers import OrderSerializer
+from rest_framework.views import APIView
+from django.db import transaction
+from accounts.models import Address
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -50,12 +54,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 
-# orders/views.py
-# ... (سایر import ها) ...
-from rest_framework.views import APIView
-from django.db import transaction
-from accounts.models import Address
-from carts.models import Cart
 
 class CheckoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -95,3 +93,9 @@ class CheckoutView(APIView):
 
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+
+
+
+

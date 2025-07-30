@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Profile,UserActivity 
-from django.shortcuts import render
-from django.urls import path
-from django.core.cache import cache
-from django.utils import timezone
-from datetime import timedelta
+from .models import Profile
+
+
 
 
 class ProfileInline(admin.StackedInline):

@@ -16,14 +16,6 @@ class Profile(models.Model):
 
 
 
-class UserActivity(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    last_seen = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.user.username} - Last Seen: {self.last_seen}"
-    
-
 
 class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
