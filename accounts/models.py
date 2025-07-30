@@ -22,3 +22,16 @@ class UserActivity(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Last Seen: {self.last_seen}"
+    
+
+
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
+    country = models.CharField(max_length=100, default="ایران")
+    city = models.CharField(max_length=100)
+    street_address = models.CharField(max_length=255)
+    postal_code = models.CharField(max_length=20)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.city}"

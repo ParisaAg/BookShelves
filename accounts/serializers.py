@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Profile
+from .models import Profile,Address
+
+
 User = get_user_model()
 
 class SimpleUserSerializer(serializers.ModelSerializer):
@@ -62,3 +64,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        exclude = ['user']

@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,permissions
-from .serializers import RegisterSerializer,ProfileSerializer
+from .serializers import RegisterSerializer,ProfileSerializer,AddressSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from rest_framework import generics, viewsets
-from .models import Profile
+from .models import Profile,Address
 from django.core.cache import cache
 from rest_framework.permissions import IsAdminUser
 
@@ -121,21 +121,12 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 
-# class OnlineUsersView(APIView):
-#     permission_classes = [IsAdminUser]
+class AddressViewSet(viewsets.ModelViewSet):
+    serializer_class = AddressSerializer
+    permission_classes = [IsAuthenticated]
 
-#     def get(self, request):
-#         online_keys = cache.keys('online-user-*')
-#         online_user_ids = [int(key.split('-')[-1]) for key in online_keys]
-        
-#         online_users = User.objects.filter(id__in=online_user_ids)
-        
-#         serialized_users = [
-#             {'id': user.id, 'username': user.username, 'last_seen': cache.get(f'online-user-{user.id}')}
-#             for user in online_users
-#         ]
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user)
 
-#         return Response({
-#             'online_count': len(online_user_ids),
-#             'online_users': serialized_users
-#         })
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
