@@ -7,7 +7,6 @@ router = DefaultRouter()
 router.register(r'orders', OrderViewSet, basename='order')
 
 urlpatterns = [
-    # این خط در پروژه شما وجود ندارد و باید اضافه شود
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     
     path('orders/verify/', PaymentVerificationView.as_view(), name='payment-verify'),
