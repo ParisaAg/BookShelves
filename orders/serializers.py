@@ -14,3 +14,9 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'user', 'status', 'created_at', 'total_price', 'items']
+
+
+
+
+class CheckoutSerializer(serializers.Serializer):
+    address_id = serializers.IntegerField()

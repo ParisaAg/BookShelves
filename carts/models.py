@@ -12,7 +12,6 @@ class Cart(models.Model):
 
     @property
     def total_price(self) -> Decimal:
-        # از total_price هر آیتم استفاده می‌کنیم
         return sum([item.total_price for item in self.items.all()])
 
     def __str__(self):
