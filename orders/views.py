@@ -1,58 +1,31 @@
 # orders/views.py
+import requests
+import json
 from django.db import transaction
+from django.conf import settings
+from django.shortcuts import redirect
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from .models import Order, OrderItem
 from carts.models import Cart
-from .serializers import OrderSerializer,CheckoutSerializer 
-from rest_framework.views import APIView
-from django.db import transaction
 from accounts.models import Address
+from .serializers import OrderSerializer, CheckoutSerializer
 
+#this is for check 
+ZARINPAL_REQUEST_URL = "https://api.zarinpal.com/pg/v4/payment/request.json"
+ZARINPAL_VERIFY_URL = "https://api.zarinpal.com/pg/v4/payment/verify.json"
+CALLBACK_URL = 'https://your-frontend-domain.com/payment/verify?order_id={order_id}'
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(viewsets.ReadOnlyModelViewSet):
+
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Order.objects.prefetch_related('items__book').filter(user=self.request.user)
-
-    @transaction.atomic 
-    def create(self, request, *args, **kwargs):
-
-        try:
-            cart = Cart.objects.get(user=request.user)
-            if cart.items.count() == 0:
-                return Response({'error': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
-        except Cart.DoesNotExist:
-            return Response({'error': 'You do not have a cart.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        order = Order.objects.create(user=request.user)
-        
-        total_price = 0
-        for cart_item in cart.items.all():
-            order_item = OrderItem.objects.create(
-                order=order,
-                book=cart_item.book,
-                quantity=cart_item.quantity,
-                unit_price=cart_item.book.final_price
-            )
-            total_price += order_item.quantity * order_item.unit_price
-            
-            if cart_item.book.book_type != 'digital':
-                cart_item.book.inventory -= cart_item.quantity
-                cart_item.book.save(update_fields=['inventory'])
-
-        order.total_price = total_price
-        order.save()
-
-        cart.items.all().delete()
-        serializer = self.get_serializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-
-
 
 
 class CheckoutView(APIView):
@@ -68,16 +41,16 @@ class CheckoutView(APIView):
         try:
             cart = Cart.objects.prefetch_related('items__book').get(user=user)
             if cart.items.count() == 0:
-                return Response({'error': 'سبد خرید شما خالی است.'}, status=status.HTTP_400_BAD_REQUEST)
-
+                return Response({'error': 'Your cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
+            
             shipping_address = Address.objects.get(id=address_id, user=user)
         except (Cart.DoesNotExist, Address.DoesNotExist):
-            return Response({'error': 'سبد خرید یا آدرس نامعتبر است.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid cart or address.'}, status=status.HTTP_400_BAD_REQUEST)
 
         for item in cart.items.all():
             if item.book.book_type != 'digital' and item.book.inventory < item.quantity:
                 return Response(
-                    {'error': f"موجودی کتاب '{item.book.title}' کافی نیست. فقط {item.book.inventory} عدد باقی مانده."},
+                    {'error': f"Not enough stock for '{item.book.title}'. Only {item.book.inventory} left."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -86,7 +59,7 @@ class CheckoutView(APIView):
             total_price=cart.total_price,
             shipping_address=shipping_address
         )
-
+        
         for cart_item in cart.items.all():
             OrderItem.objects.create(
                 order=order,
@@ -97,11 +70,17 @@ class CheckoutView(APIView):
             if cart_item.book.book_type != 'digital':
                 cart_item.book.inventory -= cart_item.quantity
                 cart_item.book.save(update_fields=['inventory'])
-
+        
         cart.items.all().delete()
+        
 
         serializer = OrderSerializer(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class PaymentVerificationView(APIView):
 
+    def get(self, request, *args, **kwargs):
+        # This is a placeholder for the real verification logic
+        # which would check query params from the gateway and update the order status.
+        return Response({"message": "This endpoint is ready for payment verification."})
