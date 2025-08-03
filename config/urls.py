@@ -15,4 +15,5 @@ urlpatterns = [
     path('api/contact/', include('contact.urls')),
     path('api/', include('wishlist.urls')),
     path('api/', include('blogs.urls')),
+    
 ]

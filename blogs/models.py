@@ -47,6 +47,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     published_at = models.DateTimeField(null=True, blank=True, verbose_name="تاریخ انتشار")
+    view_count = models.IntegerField(default=0)
 
     class Meta:
         ordering = ['-published_at']
