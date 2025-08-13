@@ -16,13 +16,13 @@ from .views import (
   
 )
 
-router = DefaultRouter()
-
-router.register(r'books', BookViewSet, basename='book')
+router = routers.SimpleRouter()
+router.register(r'', BookViewSet, basename='book') 
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'authors', AuthorViewSet, basename='author')
 router.register(r'discounts', DiscountViewSet, basename='discount')
-books_router = routers.NestedSimpleRouter(router, r'books', lookup='book')
+
+books_router = routers.NestedSimpleRouter(router, r'', lookup='slug')
 books_router.register(r'reviews', ReviewViewSet, basename='book-reviews')
 
 urlpatterns = [
