@@ -12,8 +12,6 @@ from books.permission import IsAdminOrStaff
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    #lookup_field = 'pk'
-
     def get_queryset(self):
         if self.request.user.is_staff:
             return Post.objects.all()
