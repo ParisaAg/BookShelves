@@ -12,7 +12,7 @@ from books.permission import IsAdminOrStaff
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    #lookup_field = 'pk'
+    lookup_field = 'id'
 
     def get_queryset(self):
         if self.request.user.is_staff:
