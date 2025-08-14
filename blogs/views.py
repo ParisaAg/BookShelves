@@ -12,7 +12,7 @@ from books.permission import IsAdminOrStaff
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    lookup_field = 'slug' 
+    lookup_field = 'pk'
 
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -47,8 +47,6 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    # New action to get the most recent posts.
-    # URL: /api/blogs/recent/
     @action(detail=False, methods=['get'])
     def recent(self, request):
         queryset = self.get_queryset().order_by('-published_at')[:5] 
@@ -60,11 +58,11 @@ class PostViewSet(viewsets.ModelViewSet):
 class BlogCategoryViewSet(viewsets.ModelViewSet):
     queryset = BlogCategory.objects.all()
     serializer_class = BlogCategorySerializer
-    lookup_field = 'slug'
+    lookup_field = 'pk'
     permission_classes = [IsAdminOrStaff]
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    lookup_field = 'slug'
+    lookup_field = 'pk'
     permission_classes = [IsAdminOrStaff]
