@@ -84,7 +84,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [IsAdminOrStaff]
+    #permission_classes = [IsAdminOrStaff]
     pagination_class = None
 
 class DiscountViewSet(viewsets.ModelViewSet):
