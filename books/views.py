@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Book, Category, Author, Discount
 from .serializers import BookSerializer, CategorySerializer, AuthorSerializer, DiscountSerializer
-from .permission import IsAdminOrStaff,AllowAny
+from .permission import IsAdminOrStaff
+from rest_framework.permissions import AllowAny
 from orders.models import Order 
 from .filters import BookFilter
 
