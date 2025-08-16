@@ -73,7 +73,7 @@ class BookViewSet(viewsets.ModelViewSet):
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrStaff] 
+    permission_classes = [AllowAny] 
     
     def get_queryset(self):
 
@@ -85,14 +85,13 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    #permission_classes = [IsAdminOrStaff]
+    permission_classes = [AllowAny]
     pagination_class = None
-    permission_classes = [AllowAny] 
 
 class DiscountViewSet(viewsets.ModelViewSet):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
-    permission_classes = [IsAdminOrStaff]
+    permission_classes = [AllowAny]
 
 
 class LatestBooksView(generics.ListAPIView):
