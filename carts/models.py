@@ -1,4 +1,3 @@
-# carts/models.py
 
 from django.db import models
 from django.conf import settings
@@ -14,6 +13,9 @@ class Cart(models.Model):
     def total_price(self) -> Decimal:
         return sum([item.total_price for item in self.items.all()])
 
+    def clear(self):
+        self.items.all().delete()
+        
     def __str__(self):
         return f"Cart for {self.user.username}"
 

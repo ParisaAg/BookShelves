@@ -1,23 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status,permissions
-from .serializers import RegisterSerializer,ProfileSerializer,AddressSerializer
+from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.contrib.auth.models import User  
 from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
 from rest_framework import generics, viewsets
-from .models import Profile,Address
-from django.core.cache import cache
-from rest_framework.permissions import IsAdminUser
+from .serializers import RegisterSerializer, ProfileSerializer, AddressSerializer
+from .models import Profile, Address
 
-# Create your views here.
+User = get_user_model()
+
+
 class RegisterView(APIView):
-
     throttle_scope = 'register'
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         try:
@@ -26,21 +23,18 @@ class RegisterView(APIView):
                 return Response({"message": "حساب کاربری شما با موفقیت ایجاد شد."}, status=status.HTTP_201_CREATED)
             return Response({
                 "errors": serializer.errors,
-                "message": "مشکلی در داده‌های ثبت‌ نام شما وجود دارد."
+                "message": "مشکلی در داده‌های ثبت‌نام شما وجود دارد."
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({
                 "error": str(e),
-                "message": "یک خطای غیرمنتظره در حین ثبت‌ نام رخ داد."
+                "message": "یک خطای غیرمنتظره در حین ثبت‌نام رخ داد."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-
-
 
 
 class LoginView(APIView):
-
     throttle_scope = 'login'
+
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
@@ -60,6 +54,13 @@ class LoginView(APIView):
                 secure=True,
                 samesite='Lax'
             )
+            response.set_cookie(
+                key='refresh_token',
+                value=str(refresh),
+                httponly=True,
+                secure=True,
+                samesite='Lax'
+            )
             response.data = {
                 "message": 'شما با موفقیت وارد شدید.',
                 "access": str(refresh.access_token),
@@ -71,7 +72,6 @@ class LoginView(APIView):
             return response
         else:
             return Response({"error": "ایمیل یا رمز عبور نامعتبر است."}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 class CheckAuthView(APIView):
@@ -99,19 +99,15 @@ class UserProfileView(APIView):
         })
 
 
-
-
 class LogoutView(APIView):
     def post(self, request):
-        response = Response({"message":'شما با موفقیت خارج شدید.'}, status=status.HTTP_200_OK)
+        response = Response({"message": 'شما با موفقیت خارج شدید.'}, status=status.HTTP_200_OK)
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
-        return 
-        
+        return response
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
-
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]

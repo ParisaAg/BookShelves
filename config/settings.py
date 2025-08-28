@@ -53,8 +53,11 @@ INSTALLED_APPS = [
     'contact',
     'wishlist',
     'blogs',
+    'checkouts',
   
 ]
+
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -283,3 +286,23 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 #         }
 #     }
 # }
+
+
+
+import os
+
+
+ZARINPAL_MERCHANT_ID = os.getenv("ZARINPAL_MERCHANT_ID", "") # حتما در .env تنظیم کن
+ZARINPAL_REQUEST_URL = os.getenv(
+"ZARINPAL_REQUEST_URL",
+"https://api.zarinpal.com/pg/v4/payment/request.json"
+)
+ZARINPAL_VERIFY_URL = os.getenv(
+"ZARINPAL_VERIFY_URL",
+"https://api.zarinpal.com/pg/v4/payment/verify.json"
+)
+# آدرس فرانت‌اندت را جایگزین کن
+FRONTEND_VERIFY_URL = os.getenv(
+"FRONTEND_VERIFY_URL",
+"https://your-frontend-domain.com/payment/verify"
+)
