@@ -3,7 +3,7 @@ from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from cart.models import Cart
+from carts.models import Cart
 from orders.models import Order, OrderItem
 from .models import Payment
 
