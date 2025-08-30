@@ -45,9 +45,9 @@ class CheckoutView(APIView):
 
             data = {
                 "merchant_id": MERCHANT_ID,
-                "amount": total_price,
+                "amount": int(total_price),
                 "description": f"سفارش #{order.id}",
-                "callback_url": request.build_absolute_uri("/api/checkout/verify/"),
+                "callback_url": request.build_absolute_uri("http://localhost:5173/api/checkout/verify/"),
                 "metadata": {"email": user.email},
             }
             try:

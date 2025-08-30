@@ -33,7 +33,8 @@ class CartItem(models.Model):
         return self.quantity * self.book.final_price
 
     class Meta:
-        unique_together = ('cart', 'book')
-
+        constraints = [
+            models.UniqueConstraint(fields=['cart', 'book'], name='unique_cart_book')
+        ]
     def __str__(self):
         return f"{self.quantity} x {self.book.title} in cart {self.cart.id}"

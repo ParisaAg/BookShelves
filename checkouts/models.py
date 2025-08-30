@@ -22,7 +22,7 @@ class Payment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="initiated")
     authority = models.CharField(max_length=255, blank=True, null=True)
     ref_id = models.CharField(max_length=255, blank=True, null=True)
-    amount = models.PositiveIntegerField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2) 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

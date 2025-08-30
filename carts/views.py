@@ -61,4 +61,4 @@ class CartViewSet(viewsets.ModelViewSet):
 
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart.items.all().delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Cart cleared successfully"}, status=status.HTTP_204_NO_CONTENT)
