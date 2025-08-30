@@ -3,11 +3,10 @@ from django.db import transaction
 from rest_framework import status, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Order, OrderItem, Payment
-from .serializers import OrderSerializer, PaymentSerializer
-
-# تنظیمات زرین‌پال
-MERCHANT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # از پنل زرین‌پال بگیر
+from .models import  Payment
+from orders.serializers import OrderSerializer
+from orders.models import Order,OrderItem
+MERCHANT_ID = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" 
 ZARINPAL_REQUEST_URL = "https://api.zarinpal.com/pg/v4/payment/request.json"
 ZARINPAL_VERIFY_URL = "https://api.zarinpal.com/pg/v4/payment/verify.json"
 ZARINPAL_STARTPAY_URL = "https://www.zarinpal.com/pg/StartPay/{authority}"
@@ -23,7 +22,7 @@ class CheckoutView(APIView):
             return Response({"error": "سبد خرید خالی است."}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            # ایجاد سفارش
+           
             order = Order.objects.create(user=user, address=request.data.get("address", ""))
             total_price = 0
             for item in cart.items.all():
@@ -36,7 +35,6 @@ class CheckoutView(APIView):
                 total_price += item.total_price
             cart.clear()
 
-            # ایجاد رکورد پرداخت
             payment = Payment.objects.create(
                 order=order,
                 user=user,
@@ -45,7 +43,6 @@ class CheckoutView(APIView):
                 status="initiated"
             )
 
-            # درخواست به زرین‌پال
             data = {
                 "merchant_id": MERCHANT_ID,
                 "amount": total_price,
